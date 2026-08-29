@@ -43,46 +43,112 @@ function textBody(m: ReceiptMail): string {
   ].join('\n')
 }
 
+/**
+ * 신청 폼과 같은 요가 톤(모래·세이지·흙).
+ *
+ * 메일 클라이언트는 <style> 블록과 웹폰트를 자주 지운다.
+ * 그래서 전부 인라인 스타일 + table 레이아웃 + 시스템 세리프로 짠다.
+ */
 function htmlBody(m: ReceiptMail): string {
   const esc = (s: string) =>
     String(s).replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]!))
 
-  const row = (k: string, v: string) =>
-    `<tr>
-       <td style="padding:6px 16px 6px 0;color:#6f6f68;font-size:14px;white-space:nowrap">${k}</td>
-       <td style="padding:6px 0;color:#1c1c1a;font-size:14px;font-weight:600">${esc(v)}</td>
-     </tr>`
+  const SERIF = "Georgia,'Apple SD Gothic Neo','Nanum Myeongjo',serif"
+  const SANS = "-apple-system,BlinkMacSystemFont,'Apple SD Gothic Neo','Malgun Gothic',sans-serif"
 
-  return `<div style="font-family:-apple-system,BlinkMacSystemFont,'Apple SD Gothic Neo',sans-serif;
-              max-width:520px;margin:0 auto;padding:32px 20px;color:#1c1c1a;line-height:1.6">
-  <h1 style="font-size:20px;font-weight:650;margin:0 0 8px">신청이 접수되었습니다</h1>
-  <p style="margin:0 0 24px;color:#6f6f68;font-size:14px">${esc(m.name)}님, 신청해주셔서 감사합니다.</p>
+  const SAND = '#f4f1ea'
+  const PAPER = '#fbfaf7'
+  const INK = '#3a3730'
+  const SOFT = '#8b8578'
+  const LINE = '#e0dbd0'
+  const SAGE = '#7d8f7a'
 
-  <div style="border:1px solid #e2e2dc;border-radius:12px;padding:18px 20px;margin-bottom:24px">
-    <table style="border-collapse:collapse;width:100%">
-      ${row('프로그램', m.programName)}
-      ${row('일정', m.programDate)}
-      ${row('장소', m.programPlace)}
-      ${row('참가비', won(m.price))}
-      ${row('신청번호', m.applyNo)}
+  const row = (k: string, v: string) => `
+    <tr>
+      <td style="padding:9px 20px 9px 0;color:${SOFT};font-size:13px;white-space:nowrap;
+                 border-bottom:1px solid ${LINE};font-family:${SANS}">${k}</td>
+      <td style="padding:9px 0;color:${INK};font-size:14px;font-weight:600;
+                 border-bottom:1px solid ${LINE};font-family:${SANS}">${esc(v)}</td>
+    </tr>`
+
+  return `<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="color-scheme" content="light">
+<title>신청이 접수되었습니다</title>
+</head>
+<body style="margin:0;padding:0;background:${SAND}">
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0"
+       style="background:${SAND};padding:40px 16px">
+  <tr><td align="center">
+
+    <table role="presentation" width="100%" cellpadding="0" cellspacing="0"
+           style="max-width:520px;background:${PAPER};border:1px solid ${LINE};border-radius:14px">
+      <tr><td style="padding:44px 34px 38px">
+
+        <!-- 머리말 -->
+        <p style="margin:0 0 22px;text-align:center;color:${SAGE};font-family:${SERIF};
+                  font-size:11px;letter-spacing:.22em;text-transform:uppercase">
+          &#9679;&nbsp;&nbsp;&nbsp;&#9679;&nbsp;&nbsp;&nbsp;&#9679;
+        </p>
+
+        <h1 style="margin:0 0 12px;text-align:center;color:${INK};font-family:${SERIF};
+                   font-size:23px;font-weight:700;letter-spacing:.01em;line-height:1.45">
+          신청이 접수되었습니다
+        </h1>
+        <p style="margin:0 0 34px;text-align:center;color:${SOFT};font-family:${SANS};
+                  font-size:14.5px;line-height:1.7">
+          ${esc(m.name)}님, 신청해주셔서 감사합니다.<br>수업에서 뵙겠습니다.
+        </p>
+
+        <!-- 신청 내용 -->
+        <table role="presentation" width="100%" cellpadding="0" cellspacing="0"
+               style="border-collapse:collapse;border-top:1px solid ${LINE};margin-bottom:30px">
+          ${row('프로그램', m.programName)}
+          ${row('일정', m.programDate)}
+          ${row('장소', m.programPlace)}
+          ${row('참가비', won(m.price))}
+          ${row('신청번호', m.applyNo)}
+        </table>
+
+        <!-- 안내 -->
+        <table role="presentation" width="100%" cellpadding="0" cellspacing="0"
+               style="background:${SAND};border-left:2px solid ${SAGE};border-radius:0 8px 8px 0;
+                      margin-bottom:30px">
+          <tr><td style="padding:16px 18px;font-family:${SANS};font-size:13.5px;
+                         color:${INK};line-height:1.7">
+            <strong style="font-weight:600">아직 참가가 확정된 것은 아닙니다.</strong><br>
+            <span style="color:${SOFT}">입금 안내를 곧 보내드리며, 입금이 확인되면 확정 안내를 드립니다.</span>
+          </td></tr>
+        </table>
+
+        <!-- 내역 조회 -->
+        <table role="presentation" cellpadding="0" cellspacing="0" align="center"
+               style="margin:0 auto 34px">
+          <tr><td style="border-radius:9px;background:${PAPER};border:1px solid ${LINE}">
+            <a href="https://nodak-apply-form.vercel.app/my"
+               style="display:inline-block;padding:13px 26px;color:${INK};text-decoration:none;
+                      font-family:${SERIF};font-size:14px;font-weight:700;letter-spacing:.05em">
+              내 신청 내역 보기
+            </a>
+          </td></tr>
+        </table>
+
+        <p style="margin:0;padding-top:22px;border-top:1px solid ${LINE};text-align:center;
+                  color:${SOFT};font-family:${SANS};font-size:12px;line-height:1.7">
+          문의사항은 이 메일에 회신해주세요.<br>
+          제출하신 정보는 프로그램 운영 목적으로만 사용됩니다.
+        </p>
+
+      </td></tr>
     </table>
-  </div>
 
-  <div style="background:#fdf6e3;border-radius:9px;padding:14px 16px;margin-bottom:24px;font-size:14px">
-    <strong>아직 참가가 확정된 것은 아닙니다.</strong><br>
-    입금 안내를 곧 보내드리며, 입금이 확인되면 확정 안내를 드립니다.
-  </div>
-
-  <p style="font-size:14px;margin:0 0 24px">
-    신청 내역은
-    <a href="https://nodak-apply-form.vercel.app/my" style="color:#1c1c1a">여기</a>에서
-    이름과 전화번호로 확인하실 수 있습니다.
-  </p>
-
-  <p style="font-size:12px;color:#9b9a92;margin:0;border-top:1px solid #e2e2dc;padding-top:16px">
-    문의사항은 이 메일에 회신해주세요.
-  </p>
-</div>`
+  </td></tr>
+</table>
+</body>
+</html>`
 }
 
 /**
