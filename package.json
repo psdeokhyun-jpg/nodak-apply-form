@@ -1,0 +1,11 @@
+{
+  "name": "apply-form",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "bun run server.ts"
+  },
+  "devDependencies": {
+    "typescript": "^5.6.0"
+  }
+}

@@ -1,0 +1,360 @@
+/**
+ * Airtable 연동 + 도메인 로직.
+ *
+ * 로컬 개발 서버(server.ts)와 Vercel Functions(api/*.ts)가 이 파일을 공유한다.
+ * 런타임에 종속된 코드(Bun.sleep 등)를 쓰지 않는다.
+ *
+ * Airtable 키는 서버에서만 읽는다. 브라우저로 절대 내려보내지 않는다.
+ */
+
+const BASE_ID = process.env.AIRTABLE_BASE_ID ?? 'appBHziM1LClZiG2R'
+
+const TBL_PROGRAM = process.env.AIRTABLE_TBL_PROGRAM ?? 'tblvyiyFObgvYXCR5'
+const TBL_APPLY = process.env.AIRTABLE_TBL_APPLY ?? 'tblk9CAC7oeKgKC2P'
+const TBL_MEMBER = process.env.AIRTABLE_TBL_MEMBER ?? 'tblqbTl2kBifCEVQO'
+
+const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms))
+
+// ============================================
+// Airtable client
+// ============================================
+
+async function airtable(
+  path: string,
+  init: RequestInit = {},
+  query: Record<string, string | string[]> = {}
+): Promise<any> {
+  const apiKey = process.env.AIRTABLE_API_KEY
+  if (!apiKey) throw new Error('AIRTABLE_API_KEY 환경변수가 없습니다.')
+
+  const url = new URL(`https://api.airtable.com/v0/${BASE_ID}/${path}`)
+  for (const [k, v] of Object.entries(query)) {
+    if (Array.isArray(v)) v.forEach((item) => url.searchParams.append(k, item))
+    else url.searchParams.set(k, v)
+  }
+
+  // Airtable rate limit(5 req/s) 대응: 429면 지수 백오프로 재시도
+  for (let attempt = 0; attempt < 4; attempt++) {
+    const res = await fetch(url, {
+      ...init,
+      headers: {
+        Authorization: `Bearer ${apiKey}`,
+        'Content-Type': 'application/json',
+        ...(init.headers ?? {}),
+      },
+    })
+
+    if (res.status === 429) {
+      await sleep(2 ** attempt * 400)
+      continue
+    }
+    if (!res.ok) {
+      throw new Error(`Airtable ${res.status}: ${await res.text()}`)
+    }
+    return res.json()
+  }
+  throw new Error('Airtable rate limit: 재시도 초과')
+}
+
+/** filterByFormula 문자열 리터럴 이스케이프 (formula injection 방지) */
+function esc(value: string): string {
+  return value.replace(/\\/g, '\\\\').replace(/"/g, '\\"')
+}
+
+// ============================================
+// 정규화 / 검증
+// ============================================
+
+export const digits = (s: string) => String(s ?? '').replace(/\D/g, '')
+const normEmail = (s: string) => String(s ?? '').trim().toLowerCase()
+
+/** 010-1234-5678 형태로 통일 */
+export function formatPhone(raw: string): string {
+  const d = digits(raw)
+  if (d.length === 11) return `${d.slice(0, 3)}-${d.slice(3, 7)}-${d.slice(7)}`
+  if (d.length === 10) return `${d.slice(0, 3)}-${d.slice(3, 6)}-${d.slice(6)}`
+  return String(raw ?? '').trim()
+}
+
+export function validate(f: Record<string, string>): string | null {
+  if (!f.programId) return '프로그램을 선택해주세요.'
+  if (!f.name?.trim()) return '이름을 입력해주세요.'
+  if (f.name.trim().length > 40) return '이름이 너무 깁니다.'
+  if (digits(f.phone).length < 10) return '전화번호를 정확히 입력해주세요.'
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(f.email ?? '')) return '이메일 형식이 올바르지 않습니다.'
+  if ((f.motivation ?? '').length > 1000) return '신청동기는 1000자 이내로 입력해주세요.'
+  if ((f.org ?? '').length > 60) return '소속이 너무 깁니다.'
+  // 봇 차단용 honeypot: 사람에겐 보이지 않는 필드다. 채워져 있으면 봇.
+  if (f.website) return 'BOT'
+  return null
+}
+
+// ============================================
+// 도메인 로직
+// ============================================
+
+/** 모집중인 프로그램만 폼에 노출 */
+export async function listOpenPrograms() {
+  const data = await airtable(TBL_PROGRAM, {}, { filterByFormula: '{모집상태}="모집중"' })
+  return data.records
+    .map((r: any) => ({
+      id: r.id,
+      name: r.fields['프로그램명'],
+      category: r.fields['구분'] ?? '',
+      date: r.fields['날짜'] ?? '',
+      place: r.fields['장소'] ?? '',
+      capacity: r.fields['정원'] ?? null,
+      price: r.fields['금액'] ?? 0,
+    }))
+    .sort((a: any, b: any) => String(a.date).localeCompare(String(b.date)))
+}
+
+/** 프로그램 전체를 id -> 정보 맵으로 (내역 조회엔 마감/종료 프로그램도 나와야 한다) */
+async function programMap(): Promise<Map<string, any>> {
+  const data = await airtable(TBL_PROGRAM, {}, { maxRecords: '500' })
+  return new Map(
+    data.records.map((r: any) => [
+      r.id,
+      {
+        name: r.fields['프로그램명'],
+        date: r.fields['날짜'] ?? '',
+        place: r.fields['장소'] ?? '',
+        price: r.fields['금액'] ?? 0,
+        status: r.fields['모집상태'] ?? '',
+      },
+    ])
+  )
+}
+
+/** 프로그램 id가 실재하는지 (임의 레코드 id를 밀어넣는 걸 막는다) */
+async function programExists(id: string): Promise<boolean> {
+  try {
+    await airtable(`${TBL_PROGRAM}/${id}`)
+    return true
+  } catch {
+    return false
+  }
+}
+
+/** 기존 멤버 찾기: 전화번호 또는 이메일이 일치하면 동일인 */
+async function findMember(phone: string, email: string) {
+  const formula = `OR(
+    SUBSTITUTE(SUBSTITUTE({전화번호}, "-", ""), " ", "") = "${esc(digits(phone))}",
+    LOWER({이메일}) = "${esc(normEmail(email))}"
+  )`
+  const data = await airtable(TBL_MEMBER, {}, { filterByFormula: formula, maxRecords: '1' })
+  return data.records[0] ?? null
+}
+
+/** 기존 멤버면 재사용하고 최신 연락처로 갱신, 없으면 새로 생성 */
+async function upsertMember(f: Record<string, string>) {
+  const fields: Record<string, unknown> = {
+    이름: f.name.trim(),
+    전화번호: formatPhone(f.phone),
+    이메일: normEmail(f.email),
+  }
+  if (f.org?.trim()) fields['소속'] = f.org.trim()
+
+  const existing = await findMember(f.phone, f.email)
+
+  if (existing) {
+    // 연락처는 최신값으로 갱신. 유입경로는 최초 유입을 보존하려고 비어있을 때만 채운다.
+    const patch: Record<string, unknown> = { ...fields }
+    if (f.source && !existing.fields['유입경로']) patch['유입경로'] = f.source
+
+    const updated = await airtable(`${TBL_MEMBER}/${existing.id}`, {
+      method: 'PATCH',
+      body: JSON.stringify({ fields: patch }),
+    })
+    return { id: updated.id, isNew: false, name: updated.fields['이름'] }
+  }
+
+  if (f.source) fields['유입경로'] = f.source
+  const created = await airtable(TBL_MEMBER, {
+    method: 'POST',
+    body: JSON.stringify({ fields }),
+  })
+  return { id: created.id, isNew: true, name: created.fields['이름'] }
+}
+
+/** 같은 사람이 같은 프로그램에 이미 신청했는지 */
+async function alreadyApplied(memberId: string, programId: string) {
+  const data = await airtable(
+    TBL_APPLY,
+    {},
+    { filterByFormula: 'AND({멤버}!="", {프로그램}!="")', maxRecords: '1000' }
+  )
+  return data.records.some(
+    (r: any) =>
+      (r.fields['멤버'] ?? []).includes(memberId) &&
+      (r.fields['프로그램'] ?? []).includes(programId)
+  )
+}
+
+/** APP-YYYY-NNN 다음 번호 */
+async function nextApplyNo(): Promise<string> {
+  const year = new Date().getFullYear()
+  // Airtable은 배열 파라미터를 fields[] 형식으로 받는다
+  const data = await airtable(TBL_APPLY, {}, { 'fields[]': ['신청번호'], maxRecords: '1000' })
+  const prefix = `APP-${year}-`
+  let max = 0
+  for (const r of data.records) {
+    const no = String(r.fields['신청번호'] ?? '')
+    if (no.startsWith(prefix)) {
+      const n = parseInt(no.slice(prefix.length), 10)
+      if (!Number.isNaN(n) && n > max) max = n
+    }
+  }
+  return `${prefix}${String(max + 1).padStart(3, '0')}`
+}
+
+export async function submit(f: Record<string, string>) {
+  if (!(await programExists(f.programId))) {
+    return { ok: false, code: 'BAD_PROGRAM', message: '선택한 프로그램을 찾을 수 없습니다.' }
+  }
+
+  const member = await upsertMember(f)
+
+  if (await alreadyApplied(member.id, f.programId)) {
+    return { ok: false, code: 'DUPLICATE', message: '이미 이 프로그램에 신청하셨습니다.' }
+  }
+
+  const record = await airtable(TBL_APPLY, {
+    method: 'POST',
+    body: JSON.stringify({
+      fields: {
+        신청번호: await nextApplyNo(),
+        프로그램: [f.programId],
+        멤버: [member.id],
+        이름: f.name.trim(),
+        전화번호: formatPhone(f.phone),
+        이메일: normEmail(f.email),
+        신청일: new Date().toISOString().slice(0, 10),
+        신청동기: f.motivation?.trim() ?? '',
+        신청상태: '접수',
+        입금상태: '미입금',
+      },
+    }),
+  })
+
+  return {
+    ok: true,
+    applyNo: record.fields['신청번호'],
+    memberIsNew: member.isNew,
+    name: member.name,
+  }
+}
+
+// ============================================
+// 신청 내역 조회
+// ============================================
+
+/** hong@example.com -> ho**@example.com */
+function maskEmail(email: string): string {
+  const [id, domain] = email.split('@')
+  if (!domain) return email
+  return `${id.slice(0, 2)}${'*'.repeat(Math.max(id.length - 2, 1))}@${domain}`
+}
+
+/**
+ * 전화번호만으로 열어주면 남의 번호를 아는 사람이 그 사람 내역을 다 볼 수 있다.
+ * 이름까지 함께 맞아야 열어준다 (강한 인증은 아니지만 최소한의 방어).
+ */
+export async function lookup(name: string, phone: string) {
+  const d = digits(phone)
+  const nameMatches = (v: unknown) => String(v ?? '').trim() === name.trim()
+  const phoneEq = (field: string) =>
+    `SUBSTITUTE(SUBSTITUTE({${field}}, "-", ""), " ", "") = "${esc(d)}"`
+
+  // 1차: 멤버 테이블의 (최신) 연락처로 찾기
+  const byMember = await airtable(
+    TBL_MEMBER,
+    {},
+    { filterByFormula: phoneEq('전화번호'), maxRecords: '5' }
+  )
+  let member = byMember.records.find((r: any) => nameMatches(r.fields['이름']))
+
+  // 2차: 예전 신청서에 적었던 번호로도 찾아준다.
+  // 멤버 병합 때 연락처를 최신값으로 덮어써서, 과거 번호는 신청 레코드에만 남아 있다.
+  if (!member) {
+    const byApply = await airtable(
+      TBL_APPLY,
+      {},
+      { filterByFormula: phoneEq('전화번호'), maxRecords: '10' }
+    )
+    const hit = byApply.records.find(
+      (r: any) => nameMatches(r.fields['이름']) && (r.fields['멤버'] ?? []).length
+    )
+    if (hit) member = await airtable(`${TBL_MEMBER}/${hit.fields['멤버'][0]}`)
+  }
+
+  if (!member) return { ok: true, found: false, applications: [] }
+
+  const applyIds: string[] = member.fields['신청'] ?? []
+  const programs = await programMap()
+
+  const applications = []
+  for (const id of applyIds) {
+    const rec = await airtable(`${TBL_APPLY}/${id}`)
+    const f = rec.fields
+    const p = programs.get((f['프로그램'] ?? [])[0]) ?? {}
+    applications.push({
+      applyNo: f['신청번호'] ?? '',
+      appliedAt: f['신청일'] ?? '',
+      applyStatus: f['신청상태'] ?? '',
+      payStatus: f['입금상태'] ?? '',
+      program: {
+        name: p.name ?? '(삭제된 프로그램)',
+        date: p.date ?? '',
+        place: p.place ?? '',
+        price: p.price ?? 0,
+      },
+    })
+  }
+  applications.sort((a, b) => String(b.appliedAt).localeCompare(String(a.appliedAt)))
+
+  return {
+    ok: true,
+    found: true,
+    name: member.fields['이름'],
+    email: maskEmail(String(member.fields['이메일'] ?? '')),
+    applications,
+  }
+}
+
+// ============================================
+// 속도 제한
+// ============================================
+
+/**
+ * IP당 요청 횟수 제한.
+ *
+ * 주의: 서버리스에서는 인스턴스마다 메모리가 따로라 완벽하지 않다.
+ * 무차별 대입을 늦추는 정도지, 확실한 차단이 필요하면 Upstash/KV 같은
+ * 외부 저장소로 옮겨야 한다.
+ */
+const hits = new Map<string, number[]>()
+
+export function rateLimited(ip: string, max: number, windowMs = 60_000): boolean {
+  const now = Date.now()
+  const recent = (hits.get(ip) ?? []).filter((t) => now - t < windowMs)
+  recent.push(now)
+  hits.set(ip, recent)
+  if (hits.size > 5000) hits.clear() // 메모리 방어
+  return recent.length > max
+}
+
+/** 프록시 뒤에서 클라이언트 IP 추출 */
+export function clientIp(headers: Headers): string {
+  return (
+    headers.get('x-forwarded-for')?.split(',')[0].trim() ||
+    headers.get('x-real-ip') ||
+    'unknown'
+  )
+}
+
+export const json = (data: unknown, status = 200) =>
+  new Response(JSON.stringify(data), {
+    status,
+    headers: { 'Content-Type': 'application/json; charset=utf-8' },
+  })

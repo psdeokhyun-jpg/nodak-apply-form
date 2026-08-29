@@ -1,0 +1,281 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>신청 내역 조회</title>
+<style>
+  :root {
+    --bg: #f6f6f4;
+    --card: #ffffff;
+    --ink: #1c1c1a;
+    --muted: #6f6f68;
+    --line: #e2e2dc;
+    --accent: #1c1c1a;
+    --danger: #b3261e;
+    --ok: #1f6f43;
+    --warn: #8a6100;
+    --radius: 12px;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #161614;
+      --card: #201f1d;
+      --ink: #f0efea;
+      --muted: #9b9a92;
+      --line: #34332f;
+      --danger: #f2b8b5;
+      --ok: #7fd1a4;
+      --warn: #e8c07d;
+      --accent: #f0efea;
+    }
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--ink);
+    font-family: -apple-system, BlinkMacSystemFont, "Apple SD Gothic Neo",
+      "Pretendard", "Malgun Gothic", system-ui, sans-serif;
+    line-height: 1.55;
+    -webkit-text-size-adjust: 100%;
+  }
+
+  .wrap {
+    max-width: 520px;
+    margin: 0 auto;
+    padding: 32px 20px calc(48px + env(safe-area-inset-bottom));
+  }
+
+  header { margin-bottom: 24px; }
+  h1 { font-size: 22px; font-weight: 650; margin: 0 0 6px; letter-spacing: -0.01em; }
+  .sub { color: var(--muted); font-size: 14px; margin: 0; }
+
+  .card {
+    background: var(--card);
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    padding: 20px;
+  }
+
+  .field { margin-bottom: 18px; }
+  label { display: block; font-size: 13px; font-weight: 600; margin-bottom: 7px; }
+
+  input {
+    width: 100%;
+    padding: 12px 13px;
+    font: inherit;
+    font-size: 16px;
+    color: var(--ink);
+    background: var(--bg);
+    border: 1px solid var(--line);
+    border-radius: 9px;
+    appearance: none;
+  }
+  input:focus { outline: none; border-color: var(--accent); }
+
+  button {
+    width: 100%;
+    margin-top: 4px;
+    padding: 14px;
+    font: inherit;
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--card);
+    background: var(--accent);
+    border: none;
+    border-radius: 9px;
+    cursor: pointer;
+  }
+  button:hover:not(:disabled) { opacity: .86; }
+  button:disabled { opacity: .45; cursor: default; }
+
+  .msg {
+    margin-top: 16px;
+    padding: 12px 13px;
+    border-radius: 9px;
+    font-size: 14px;
+    display: none;
+    background: color-mix(in srgb, var(--danger) 12%, transparent);
+    color: var(--danger);
+  }
+  .msg.show { display: block; }
+
+  /* 결과 */
+  .who {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: 12px;
+    margin-bottom: 14px;
+  }
+  .who strong { font-size: 17px; font-weight: 650; }
+  .who span { font-size: 13px; color: var(--muted); }
+
+  .item {
+    background: var(--card);
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    padding: 16px;
+    margin-bottom: 10px;
+  }
+  .item h3 { font-size: 15px; font-weight: 640; margin: 0 0 4px; }
+  .item .when { font-size: 13px; color: var(--muted); margin: 0 0 12px; }
+
+  .tags { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 12px; }
+  .tag {
+    font-size: 12px;
+    font-weight: 600;
+    padding: 3px 9px;
+    border-radius: 20px;
+    border: 1px solid transparent;
+  }
+  .tag.ok { background: color-mix(in srgb, var(--ok) 14%, transparent); color: var(--ok); }
+  .tag.warn { background: color-mix(in srgb, var(--warn) 16%, transparent); color: var(--warn); }
+  .tag.off { background: var(--bg); color: var(--muted); border-color: var(--line); }
+
+  .rows { border-top: 1px solid var(--line); padding-top: 10px; }
+  .row { display: flex; justify-content: space-between; font-size: 13px; padding: 3px 0; }
+  .row dt { color: var(--muted); margin: 0; }
+  .row dd { margin: 0; font-variant-numeric: tabular-nums; }
+
+  .empty {
+    background: var(--card);
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    padding: 32px 22px;
+    text-align: center;
+    color: var(--muted);
+    font-size: 14px;
+  }
+
+  .links { margin-top: 20px; text-align: center; font-size: 13px; }
+  .links a { color: var(--muted); text-decoration: none; border-bottom: 1px solid var(--line); }
+  .links a:hover { color: var(--ink); }
+
+  .note { margin-top: 18px; font-size: 12px; color: var(--muted); text-align: center; }
+</style>
+</head>
+<body>
+<div class="wrap" id="wrap">
+  <header>
+    <h1>신청 내역 조회</h1>
+    <p class="sub">신청할 때 적은 이름과 전화번호를 입력해주세요.</p>
+  </header>
+
+  <form class="card" id="form" novalidate>
+    <div class="field">
+      <label for="name">이름</label>
+      <input id="name" name="name" type="text" autocomplete="name" required>
+    </div>
+    <div class="field">
+      <label for="phone">전화번호</label>
+      <input id="phone" name="phone" type="tel" inputmode="numeric"
+             autocomplete="tel" placeholder="010-1234-5678" required>
+    </div>
+    <button type="submit" id="submit">조회하기</button>
+    <div class="msg" id="msg"></div>
+  </form>
+
+  <div class="links"><a href="/">새로 신청하기</a></div>
+  <p class="note">본인 확인을 위해 이름과 전화번호가 모두 일치해야 조회됩니다.</p>
+</div>
+
+<script>
+  const $ = (id) => document.getElementById(id);
+  const form = $('form'), msg = $('msg'), btn = $('submit');
+
+  const won = (n) => n ? '₩' + Number(n).toLocaleString('ko-KR') : '무료';
+  const esc = (s) => String(s).replace(/[&<>"]/g, (c) =>
+    ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+
+  const APPLY_TAG = { 확정: 'ok', 접수: 'warn', 대기: 'warn', 취소: 'off' };
+  const PAY_TAG = { 입금확인: 'ok', 무료참여: 'ok', 미입금: 'warn', 환불: 'off' };
+
+  $('phone').addEventListener('input', (e) => {
+    const d = e.target.value.replace(/\D/g, '').slice(0, 11);
+    e.target.value = d.length > 7 ? `${d.slice(0,3)}-${d.slice(3,7)}-${d.slice(7)}`
+                   : d.length > 3 ? `${d.slice(0,3)}-${d.slice(3)}`
+                   : d;
+  });
+
+  function render(d) {
+    if (!d.found) {
+      $('wrap').innerHTML = `
+        <header>
+          <h1>신청 내역 조회</h1>
+        </header>
+        <div class="empty">
+          입력하신 정보와 일치하는 신청 내역이 없습니다.<br>
+          이름과 전화번호를 다시 확인해주세요.
+        </div>
+        <div class="links">
+          <a href="/my">다시 조회하기</a> &nbsp;·&nbsp; <a href="/">새로 신청하기</a>
+        </div>`;
+      return;
+    }
+
+    const items = d.applications.map((a) => `
+      <div class="item">
+        <h3>${esc(a.program.name)}</h3>
+        <p class="when">${esc(a.program.date)}${a.program.place ? ' · ' + esc(a.program.place) : ''}</p>
+        <div class="tags">
+          <span class="tag ${APPLY_TAG[a.applyStatus] || 'off'}">${esc(a.applyStatus)}</span>
+          <span class="tag ${PAY_TAG[a.payStatus] || 'off'}">${esc(a.payStatus)}</span>
+        </div>
+        <dl class="rows">
+          <div class="row"><dt>신청번호</dt><dd>${esc(a.applyNo)}</dd></div>
+          <div class="row"><dt>신청일</dt><dd>${esc(a.appliedAt)}</dd></div>
+          <div class="row"><dt>참가비</dt><dd>${won(a.program.price)}</dd></div>
+        </dl>
+      </div>`).join('');
+
+    $('wrap').innerHTML = `
+      <header>
+        <h1>신청 내역</h1>
+      </header>
+      <div class="who">
+        <strong>${esc(d.name)}님</strong>
+        <span>${esc(d.email)} · 총 ${d.applications.length}건</span>
+      </div>
+      ${items}
+      <div class="links">
+        <a href="/my">다시 조회하기</a> &nbsp;·&nbsp; <a href="/">새로 신청하기</a>
+      </div>
+      <p class="note">입금 관련 문의는 운영팀에 연락해주세요.</p>`;
+  }
+
+  form.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    msg.classList.remove('show');
+    btn.disabled = true;
+    btn.textContent = '조회 중…';
+
+    try {
+      const res = await fetch('/api/my', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(Object.fromEntries(new FormData(form))),
+      });
+      const d = await res.json();
+
+      if (!d.ok) {
+        msg.textContent = d.message || '조회에 실패했습니다.';
+        msg.classList.add('show');
+        return;
+      }
+      render(d);
+    } catch {
+      msg.textContent = '네트워크 오류가 발생했습니다. 잠시 후 다시 시도해주세요.';
+      msg.classList.add('show');
+    } finally {
+      btn.disabled = false;
+      btn.textContent = '조회하기';
+    }
+  });
+</script>
+</body>
+</html>
