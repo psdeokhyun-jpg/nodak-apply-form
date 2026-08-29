@@ -4,29 +4,35 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>프로그램 신청</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Gowun+Batang:wght@400;700&display=swap" rel="stylesheet">
 <style>
   :root {
-    --bg: #f6f6f4;
-    --card: #ffffff;
-    --ink: #1c1c1a;
-    --muted: #6f6f68;
-    --line: #e2e2dc;
-    --accent: #1c1c1a;
-    --danger: #b3261e;
-    --ok: #1f6f43;
-    --radius: 12px;
+    /* 흙, 마, 세이지 — 스튜디오의 아침 빛 */
+    --sand:    #f4f1ea;
+    --paper:   #fbfaf7;
+    --ink:     #3a3730;
+    --soft:    #8b8578;
+    --line:    #e0dbd0;
+    --sage:    #7d8f7a;
+    --sage-dp: #5f6f5d;
+    --clay:    #b08268;
+    --alert:   #a4564a;
+    --radius:  14px;
   }
 
   @media (prefers-color-scheme: dark) {
     :root {
-      --bg: #161614;
-      --card: #201f1d;
-      --ink: #f0efea;
-      --muted: #9b9a92;
-      --line: #34332f;
-      --accent: #f0efea;
-      --danger: #f2b8b5;
-      --ok: #7fd1a4;
+      --sand:    #1d1c19;
+      --paper:   #26241f;
+      --ink:     #eae6dc;
+      --soft:    #a09a8c;
+      --line:    #3a3730;
+      --sage:    #9db09a;
+      --sage-dp: #b3c4b0;
+      --clay:    #c9a086;
+      --alert:   #e0a49a;
     }
   }
 
@@ -34,219 +40,381 @@
 
   body {
     margin: 0;
-    background: var(--bg);
+    background: var(--sand);
     color: var(--ink);
     font-family: -apple-system, BlinkMacSystemFont, "Apple SD Gothic Neo",
-      "Pretendard", "Malgun Gothic", system-ui, sans-serif;
-    line-height: 1.55;
+      "Pretendard", system-ui, sans-serif;
+    line-height: 1.7;
     -webkit-text-size-adjust: 100%;
   }
 
   .wrap {
-    max-width: 520px;
+    max-width: 540px;
     margin: 0 auto;
-    padding: 32px 20px calc(48px + env(safe-area-inset-bottom));
+    padding: 56px 22px calc(64px + env(safe-area-inset-bottom));
   }
 
-  header { margin-bottom: 24px; }
-  h1 { font-size: 22px; font-weight: 650; margin: 0 0 6px; letter-spacing: -0.01em; }
-  .sub { color: var(--muted); font-size: 14px; margin: 0; }
+  /* ── 헤더 ── */
+  header { text-align: center; margin-bottom: 40px; }
 
+  .mark {
+    width: 54px; height: 54px;
+    margin: 0 auto 22px;
+    color: var(--sage);
+    opacity: .9;
+  }
+
+  h1 {
+    font-family: "Gowun Batang", "Apple SD Gothic Neo", serif;
+    font-size: 27px;
+    font-weight: 700;
+    letter-spacing: .01em;
+    margin: 0 0 10px;
+  }
+
+  .sub {
+    color: var(--soft);
+    font-size: 14.5px;
+    margin: 0;
+    letter-spacing: .01em;
+  }
+
+  /* ── 카드 ── */
   form {
-    background: var(--card);
+    background: var(--paper);
     border: 1px solid var(--line);
     border-radius: var(--radius);
-    padding: 20px;
+    padding: 34px 28px;
   }
 
-  .field { margin-bottom: 18px; }
-  .field:last-of-type { margin-bottom: 0; }
+  fieldset {
+    border: none;
+    margin: 0 0 34px;
+    padding: 0;
+  }
+  fieldset:last-of-type { margin-bottom: 0; }
+
+  legend {
+    font-family: "Gowun Batang", serif;
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: .16em;
+    color: var(--sage);
+    text-transform: uppercase;
+    padding: 0 0 18px;
+    width: 100%;
+    border-bottom: 1px solid var(--line);
+    margin-bottom: 22px;
+  }
+  legend .opt {
+    float: right;
+    letter-spacing: 0;
+    text-transform: none;
+    font-weight: 400;
+    color: var(--soft);
+    font-size: 11.5px;
+  }
+
+  .field { margin-bottom: 20px; }
+  .field:last-child { margin-bottom: 0; }
 
   label {
     display: block;
     font-size: 13px;
     font-weight: 600;
-    margin-bottom: 7px;
+    letter-spacing: .01em;
+    margin-bottom: 8px;
   }
-  label .req { color: var(--danger); margin-left: 2px; }
-  label .opt { color: var(--muted); font-weight: 400; margin-left: 4px; }
+  label .req { color: var(--clay); margin-left: 3px; }
 
   input, select, textarea {
     width: 100%;
-    padding: 12px 13px;
+    padding: 13px 14px;
     font: inherit;
-    font-size: 16px; /* iOS 자동 확대 방지 */
+    font-size: 16px;               /* iOS 자동 확대 방지 */
     color: var(--ink);
-    background: var(--bg);
+    background: var(--sand);
     border: 1px solid var(--line);
     border-radius: 9px;
     appearance: none;
-    transition: border-color .12s ease;
+    transition: border-color .15s ease, background .15s ease;
   }
+  input::placeholder, textarea::placeholder { color: var(--soft); opacity: .7; }
+
   input:focus, select:focus, textarea:focus {
     outline: none;
-    border-color: var(--accent);
+    border-color: var(--sage);
+    background: var(--paper);
   }
-  textarea { resize: vertical; min-height: 92px; }
+
+  textarea { resize: vertical; min-height: 104px; line-height: 1.65; }
 
   select {
-    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='12' height='8'><path d='M1 1l5 5 5-5' fill='none' stroke='%236f6f68' stroke-width='1.6' stroke-linecap='round'/></svg>");
+    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='12' height='8'><path d='M1 1l5 5 5-5' fill='none' stroke='%238b8578' stroke-width='1.5' stroke-linecap='round'/></svg>");
     background-repeat: no-repeat;
-    background-position: right 13px center;
-    padding-right: 36px;
+    background-position: right 14px center;
+    padding-right: 38px;
   }
 
-  .hint { font-size: 12px; color: var(--muted); margin-top: 6px; }
+  .hint { font-size: 12.5px; color: var(--soft); margin-top: 7px; line-height: 1.55; }
 
-  .prog-meta {
-    margin-top: 8px;
-    padding: 11px 12px;
-    background: var(--bg);
-    border: 1px solid var(--line);
-    border-radius: 9px;
+  /* 나란히 배치 */
+  .row { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+  .row .field { margin-bottom: 0; }
+
+  .unit { position: relative; }
+  .unit input { padding-right: 42px; }
+  .unit span {
+    position: absolute;
+    right: 14px; top: 50%;
+    transform: translateY(-50%);
     font-size: 13px;
-    color: var(--muted);
+    color: var(--soft);
+    pointer-events: none;
+  }
+
+  /* 선택한 프로그램 요약 */
+  .prog-meta {
+    margin-top: 12px;
+    padding: 14px 16px;
+    background: var(--sand);
+    border-left: 2px solid var(--sage);
+    border-radius: 0 8px 8px 0;
+    font-size: 13.5px;
+    color: var(--soft);
     display: none;
   }
   .prog-meta.show { display: block; }
   .prog-meta b { color: var(--ink); font-weight: 600; }
-  .prog-meta div + div { margin-top: 3px; }
+  .prog-meta div + div { margin-top: 4px; }
+
+  /* 봇 차단용 — 사람 눈에 보이지 않는다 */
+  .hp { position: absolute; left: -9999px; width: 1px; height: 1px; overflow: hidden; }
 
   button {
     width: 100%;
-    margin-top: 22px;
-    padding: 14px;
-    font: inherit;
-    font-size: 15px;
-    font-weight: 600;
-    color: var(--card);
-    background: var(--accent);
+    margin-top: 34px;
+    padding: 16px;
+    font-family: "Gowun Batang", serif;
+    font-size: 15.5px;
+    font-weight: 700;
+    letter-spacing: .06em;
+    color: var(--paper);
+    background: var(--sage-dp);
     border: none;
     border-radius: 9px;
     cursor: pointer;
-    transition: opacity .12s ease;
+    transition: opacity .15s ease;
   }
-  button:hover:not(:disabled) { opacity: .86; }
+  @media (prefers-color-scheme: dark) { button { color: #1d1c19; } }
+  button:hover:not(:disabled) { opacity: .88; }
   button:disabled { opacity: .45; cursor: default; }
 
   .msg {
-    margin-top: 16px;
-    padding: 12px 13px;
+    margin-top: 18px;
+    padding: 13px 15px;
     border-radius: 9px;
     font-size: 14px;
     display: none;
+    background: color-mix(in srgb, var(--alert) 11%, transparent);
+    color: var(--alert);
   }
   .msg.show { display: block; }
-  .msg.err { background: color-mix(in srgb, var(--danger) 12%, transparent); color: var(--danger); }
 
+  /* ── 완료 화면 ── */
   .done {
-    background: var(--card);
+    background: var(--paper);
     border: 1px solid var(--line);
     border-radius: var(--radius);
-    padding: 32px 22px;
+    padding: 52px 30px;
     text-align: center;
   }
-  .done .mark {
-    width: 44px; height: 44px;
-    margin: 0 auto 14px;
+  .done .seal {
+    width: 52px; height: 52px;
+    margin: 0 auto 22px;
     border-radius: 50%;
-    background: color-mix(in srgb, var(--ok) 16%, transparent);
-    color: var(--ok);
+    border: 1px solid var(--sage);
+    color: var(--sage);
     display: grid; place-items: center;
-    font-size: 22px;
+    font-size: 21px;
   }
-  .done h2 { font-size: 18px; margin: 0 0 6px; font-weight: 650; }
-  .done p { color: var(--muted); font-size: 14px; margin: 0; }
+  .done h2 {
+    font-family: "Gowun Batang", serif;
+    font-size: 20px; font-weight: 700; margin: 0 0 12px;
+  }
+  .done p { color: var(--soft); font-size: 14.5px; margin: 0; }
   .done .no {
     display: inline-block;
-    margin-top: 14px;
-    padding: 7px 12px;
-    background: var(--bg);
+    margin-top: 22px;
+    padding: 9px 16px;
+    background: var(--sand);
     border: 1px solid var(--line);
-    border-radius: 7px;
-    font-size: 13px;
+    border-radius: 8px;
+    font-size: 13.5px;
+    letter-spacing: .04em;
     font-variant-numeric: tabular-nums;
   }
-  .done button { background: none; color: var(--muted); border: 1px solid var(--line); margin-top: 20px; }
-
-  .hp {
-    position: absolute;
-    left: -9999px;
-    width: 1px; height: 1px;
-    overflow: hidden;
+  .done button {
+    background: none;
+    color: var(--soft);
+    border: 1px solid var(--line);
+    margin-top: 26px;
+    font-weight: 400;
+    letter-spacing: .02em;
   }
+  @media (prefers-color-scheme: dark) { .done button { color: var(--soft); } }
 
-  .links { margin-top: 20px; text-align: center; font-size: 13px; }
-  .links a { color: var(--muted); text-decoration: none; border-bottom: 1px solid var(--line); }
-  .links a:hover { color: var(--ink); }
+  .links { margin-top: 26px; text-align: center; font-size: 13.5px; }
+  .links a {
+    color: var(--soft);
+    text-decoration: none;
+    border-bottom: 1px solid var(--line);
+    padding-bottom: 2px;
+  }
+  .links a:hover { color: var(--ink); border-color: var(--sage); }
 
-  footer { margin-top: 12px; text-align: center; font-size: 12px; color: var(--muted); }
+  footer {
+    margin-top: 16px;
+    text-align: center;
+    font-size: 12px;
+    color: var(--soft);
+    opacity: .8;
+  }
 </style>
 </head>
 <body>
-<div class="wrap">
+<div class="wrap" id="wrap">
   <header>
+    <!-- 연꽃 자세를 단순화한 표식 -->
+    <svg class="mark" viewBox="0 0 40 40" fill="none" stroke="currentColor"
+         stroke-width="1.15" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+      <circle cx="20" cy="9.5" r="4"/>
+      <path d="M20 15.2c-4.6 0-8.2 3.3-9 7.8"/>
+      <path d="M20 15.2c4.6 0 8.2 3.3 9 7.8"/>
+      <path d="M7.5 27c2.6-2.1 6.6-3.2 12.5-3.2S30 24.9 32.5 27"/>
+      <path d="M7.5 27c1.6 2.7 6.3 4.2 12.5 4.2S30.9 29.7 32.5 27"/>
+    </svg>
     <h1>프로그램 신청</h1>
-    <p class="sub">모집 중인 프로그램에 신청합니다.</p>
+    <p class="sub">호흡을 고르고, 천천히 적어주세요.</p>
   </header>
 
   <form id="form" novalidate>
-    <div class="field">
-      <label for="programId">프로그램<span class="req">*</span></label>
-      <select id="programId" name="programId" required>
-        <option value="">불러오는 중…</option>
-      </select>
-      <div class="prog-meta" id="progMeta"></div>
-    </div>
+    <fieldset>
+      <legend>수업 선택</legend>
 
-    <div class="field">
-      <label for="name">이름<span class="req">*</span></label>
-      <input id="name" name="name" type="text" autocomplete="name" required>
-    </div>
+      <div class="field">
+        <label for="programId">프로그램<span class="req">*</span></label>
+        <select id="programId" name="programId" required>
+          <option value="">불러오는 중…</option>
+        </select>
+        <div class="prog-meta" id="progMeta"></div>
+      </div>
+    </fieldset>
 
-    <div class="field">
-      <label for="phone">전화번호<span class="req">*</span></label>
-      <input id="phone" name="phone" type="tel" inputmode="numeric"
-             autocomplete="tel" placeholder="010-1234-5678" required>
-    </div>
+    <fieldset>
+      <legend>신청자 정보</legend>
 
-    <div class="field">
-      <label for="email">이메일<span class="req">*</span></label>
-      <input id="email" name="email" type="email" inputmode="email"
-             autocomplete="email" placeholder="you@example.com" required>
-      <div class="hint">이전에 신청한 적 있으면 같은 연락처로 적어주세요. 기존 정보와 자동으로 연결됩니다.</div>
-    </div>
+      <div class="field">
+        <label for="name">이름<span class="req">*</span></label>
+        <input id="name" name="name" type="text" autocomplete="name" required>
+      </div>
 
-    <div class="field">
-      <label for="org">소속<span class="opt">선택</span></label>
-      <input id="org" name="org" type="text" autocomplete="organization">
-    </div>
+      <div class="field">
+        <label for="phone">전화번호<span class="req">*</span></label>
+        <input id="phone" name="phone" type="tel" inputmode="numeric"
+               autocomplete="tel" placeholder="010-1234-5678" required>
+      </div>
 
-    <div class="field">
-      <label for="source">어떻게 알게 되셨나요?<span class="opt">선택</span></label>
-      <select id="source" name="source">
-        <option value="">선택 안 함</option>
-        <option>지인추천</option>
-        <option>SNS</option>
-        <option>검색</option>
-        <option>재참여</option>
-      </select>
-    </div>
+      <div class="field">
+        <label for="email">이메일<span class="req">*</span></label>
+        <input id="email" name="email" type="email" inputmode="email"
+               autocomplete="email" placeholder="you@example.com" required>
+        <div class="hint">이전에 신청한 적 있으면 같은 연락처로 적어주세요. 기존 정보와 자동으로 연결됩니다.</div>
+      </div>
 
-    <div class="field">
-      <label for="motivation">신청동기<span class="opt">선택</span></label>
-      <textarea id="motivation" name="motivation"
-                placeholder="참여하고 싶은 이유를 자유롭게 적어주세요."></textarea>
-    </div>
+      <div class="field">
+        <label for="org">소속</label>
+        <input id="org" name="org" type="text" autocomplete="organization">
+      </div>
+    </fieldset>
 
-    <!-- 봇 차단용. 사람 눈에는 보이지 않으므로 비어 있어야 정상 -->
+    <fieldset>
+      <legend>몸과 성향 <span class="opt">모두 선택 입력</span></legend>
+
+      <div class="field">
+        <label for="gender">성별</label>
+        <select id="gender" name="gender">
+          <option value="">선택 안 함</option>
+          <option>여성</option>
+          <option>남성</option>
+          <option>기타</option>
+          <option>응답 안 함</option>
+        </select>
+      </div>
+
+      <div class="row">
+        <div class="field unit">
+          <label for="height">키</label>
+          <input id="height" name="height" type="number" inputmode="numeric" min="100" max="250">
+          <span>cm</span>
+        </div>
+        <div class="field unit">
+          <label for="weight">몸무게</label>
+          <input id="weight" name="weight" type="number" inputmode="numeric" min="25" max="250">
+          <span>kg</span>
+        </div>
+      </div>
+      <div class="hint">동작 강도와 보조 도구를 준비하는 데만 참고합니다.</div>
+
+      <div class="row" style="margin-top:20px">
+        <div class="field">
+          <label for="mbti">MBTI</label>
+          <select id="mbti" name="mbti">
+            <option value="">선택 안 함</option>
+            <option>INTJ</option><option>INTP</option><option>ENTJ</option><option>ENTP</option>
+            <option>INFJ</option><option>INFP</option><option>ENFJ</option><option>ENFP</option>
+            <option>ISTJ</option><option>ISFJ</option><option>ESTJ</option><option>ESFJ</option>
+            <option>ISTP</option><option>ISFP</option><option>ESTP</option><option>ESFP</option>
+          </select>
+        </div>
+        <div class="field">
+          <label for="blood">혈액형</label>
+          <select id="blood" name="blood">
+            <option value="">선택 안 함</option>
+            <option>A</option><option>B</option><option>O</option><option>AB</option>
+          </select>
+        </div>
+      </div>
+    </fieldset>
+
+    <fieldset>
+      <legend>마지막으로 <span class="opt">선택 입력</span></legend>
+
+      <div class="field">
+        <label for="source">어떻게 알게 되셨나요?</label>
+        <select id="source" name="source">
+          <option value="">선택 안 함</option>
+          <option>지인추천</option>
+          <option>SNS</option>
+          <option>검색</option>
+          <option>재참여</option>
+        </select>
+      </div>
+
+      <div class="field">
+        <label for="motivation">신청동기</label>
+        <textarea id="motivation" name="motivation"
+                  placeholder="어떤 마음으로 오시는지 편하게 적어주세요."></textarea>
+      </div>
+    </fieldset>
+
     <div class="hp" aria-hidden="true">
       <label for="website">Website</label>
       <input id="website" name="website" type="text" tabindex="-1" autocomplete="off">
     </div>
 
     <button type="submit" id="submit">신청하기</button>
-    <div class="msg err" id="msg"></div>
+    <div class="msg" id="msg"></div>
   </form>
 
   <div class="links"><a href="/my">이미 신청하셨나요? 내역 조회</a></div>
@@ -258,16 +426,16 @@
   const form = $('form'), sel = $('programId'), meta = $('progMeta'), msg = $('msg'), btn = $('submit');
   let programs = [];
 
-  const won = (n) => n ? '₩' + Number(n).toLocaleString('ko-KR') : '무료';
+  const won = (n) => (n ? '₩' + Number(n).toLocaleString('ko-KR') : '무료');
+  const esc = (s) => String(s).replace(/[&<>"]/g, (c) =>
+    ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
 
   function showError(text) {
     msg.textContent = text;
     msg.classList.add('show');
     msg.scrollIntoView({ behavior: 'smooth', block: 'center' });
   }
-  function clearError() { msg.classList.remove('show'); }
 
-  // 프로그램 목록
   fetch('/api/programs')
     .then((r) => r.json())
     .then((d) => {
@@ -278,7 +446,7 @@
       }
       programs = d.programs;
       sel.innerHTML = '<option value="">선택해주세요</option>' +
-        programs.map((p) => `<option value="${p.id}">${p.name}</option>`).join('');
+        programs.map((p) => `<option value="${p.id}">${esc(p.name)}</option>`).join('');
     })
     .catch(() => {
       sel.innerHTML = '<option value="">목록을 불러오지 못했습니다</option>';
@@ -289,12 +457,11 @@
     const p = programs.find((x) => x.id === sel.value);
     if (!p) { meta.classList.remove('show'); return; }
     meta.innerHTML =
-      `<div><b>${p.date}</b>${p.place ? ' · ' + p.place : ''}</div>` +
+      `<div><b>${esc(p.date)}</b>${p.place ? ' · ' + esc(p.place) : ''}</div>` +
       `<div>참가비 <b>${won(p.price)}</b>${p.capacity ? ' · 정원 ' + p.capacity + '명' : ''}</div>`;
     meta.classList.add('show');
   });
 
-  // 전화번호 입력 보정
   $('phone').addEventListener('input', (e) => {
     const d = e.target.value.replace(/\D/g, '').slice(0, 11);
     e.target.value = d.length > 7 ? `${d.slice(0,3)}-${d.slice(3,7)}-${d.slice(7)}`
@@ -304,7 +471,7 @@
 
   form.addEventListener('submit', async (e) => {
     e.preventDefault();
-    clearError();
+    msg.classList.remove('show');
 
     const body = Object.fromEntries(new FormData(form));
     btn.disabled = true;
@@ -318,21 +485,19 @@
       });
       const d = await res.json();
 
-      if (!d.ok) {
-        showError(d.message || '신청에 실패했습니다.');
-        return;
-      }
+      if (!d.ok) { showError(d.message || '신청에 실패했습니다.'); return; }
 
       const p = programs.find((x) => x.id === body.programId);
-      document.querySelector('.wrap').innerHTML = `
+      $('wrap').innerHTML = `
         <div class="done">
-          <div class="mark">✓</div>
+          <div class="seal">✓</div>
           <h2>신청이 접수되었습니다</h2>
-          <p>${d.name}님, ${p ? p.name + ' ' : ''}신청이 정상 접수되었습니다.<br>
-             입금 안내는 이메일로 보내드립니다.</p>
-          <div class="no">신청번호 ${d.applyNo}</div>
+          <p>${esc(d.name)}님, ${p ? esc(p.name) + ' ' : ''}신청이 정상 접수되었습니다.<br>
+             접수 확인 메일을 보내드렸어요.</p>
+          <div class="no">신청번호 ${esc(d.applyNo)}</div>
           <button type="button" onclick="location.reload()">다른 프로그램도 신청하기</button>
-        </div>`;
+        </div>
+        <div class="links"><a href="/my">내 신청 내역 보기</a></div>`;
     } catch {
       showError('네트워크 오류가 발생했습니다. 잠시 후 다시 시도해주세요.');
     } finally {

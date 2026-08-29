@@ -146,14 +146,41 @@ async function findMember(phone: string, email: string) {
   return data.records[0] ?? null
 }
 
+const MBTI_TYPES = new Set([
+  'INTJ', 'INTP', 'ENTJ', 'ENTP', 'INFJ', 'INFP', 'ENFJ', 'ENFP',
+  'ISTJ', 'ISFJ', 'ESTJ', 'ESFJ', 'ISTP', 'ISFP', 'ESTP', 'ESFP',
+])
+const BLOOD_TYPES = new Set(['A', 'B', 'O', 'AB'])
+const GENDERS = new Set(['여성', '남성', '기타', '응답 안 함'])
+
+/**
+ * 선택 입력 프로필 항목.
+ * 값이 목록에 없으면 통째로 버린다 — 임의 값이 Airtable 선택지를 오염시키면 안 된다.
+ */
+function profileFields(f: Record<string, string>): Record<string, unknown> {
+  const out: Record<string, unknown> = {}
+  if (f.org?.trim()) out['소속'] = f.org.trim()
+  if (f.gender && GENDERS.has(f.gender)) out['성별'] = f.gender
+  if (f.mbti && MBTI_TYPES.has(f.mbti.toUpperCase())) out['MBTI'] = f.mbti.toUpperCase()
+  if (f.blood && BLOOD_TYPES.has(f.blood.toUpperCase())) out['혈액형'] = f.blood.toUpperCase()
+
+  const height = Number(f.height)
+  if (Number.isFinite(height) && height >= 100 && height <= 250) out['키'] = Math.round(height)
+
+  const weight = Number(f.weight)
+  if (Number.isFinite(weight) && weight >= 25 && weight <= 250) out['몸무게'] = Math.round(weight)
+
+  return out
+}
+
 /** 기존 멤버면 재사용하고 최신 연락처로 갱신, 없으면 새로 생성 */
 async function upsertMember(f: Record<string, string>) {
   const fields: Record<string, unknown> = {
     이름: f.name.trim(),
     전화번호: formatPhone(f.phone),
     이메일: normEmail(f.email),
+    ...profileFields(f),
   }
-  if (f.org?.trim()) fields['소속'] = f.org.trim()
 
   const existing = await findMember(f.phone, f.email)
 
@@ -226,11 +253,15 @@ export async function submit(f: Record<string, string>): Promise<SubmitResult> {
     return { ok: false, code: 'BAD_PROGRAM', message: '선택한 프로그램을 찾을 수 없습니다.' }
   }
 
-  const member = await upsertMember(f)
-
-  if (await alreadyApplied(member.id, f.programId)) {
+  // 중복 검사를 멤버 갱신보다 먼저 한다.
+  // 순서가 반대면, 거절될 신청도 기존 멤버의 이름·연락처를 덮어쓴다
+  // (남의 이메일을 오타로 적은 사람이 그 사람 정보를 오염시킨다).
+  const existing = await findMember(f.phone, f.email)
+  if (existing && (await alreadyApplied(existing.id, f.programId))) {
     return { ok: false, code: 'DUPLICATE', message: '이미 이 프로그램에 신청하셨습니다.' }
   }
+
+  const member = await upsertMember(f)
 
   const record = await airtable(TBL_APPLY, {
     method: 'POST',
