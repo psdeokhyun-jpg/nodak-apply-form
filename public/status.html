@@ -1,0 +1,339 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex,nofollow">
+<title>운영 현황</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Gowun+Batang:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --sand:    #f4f1ea;
+    --paper:   #fbfaf7;
+    --ink:     #3a3730;
+    --soft:    #8b8578;
+    --line:    #e0dbd0;
+    --sage:    #7d8f7a;
+    --sage-dp: #5f6f5d;
+    --clay:    #b08268;
+    --alert:   #a4564a;
+    --radius:  14px;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --sand:    #1d1c19;
+      --paper:   #26241f;
+      --ink:     #eae6dc;
+      --soft:    #a09a8c;
+      --line:    #3a3730;
+      --sage:    #9db09a;
+      --sage-dp: #b3c4b0;
+      --clay:    #c9a086;
+      --alert:   #e0a49a;
+    }
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    margin: 0;
+    background: var(--sand);
+    color: var(--ink);
+    font-family: -apple-system, BlinkMacSystemFont, "Apple SD Gothic Neo",
+      "Pretendard", system-ui, sans-serif;
+    line-height: 1.7;
+    -webkit-text-size-adjust: 100%;
+  }
+
+  .wrap {
+    max-width: 860px;
+    margin: 0 auto;
+    padding: 48px 22px calc(64px + env(safe-area-inset-bottom));
+  }
+
+  header { margin-bottom: 30px; }
+  h1 {
+    font-family: "Gowun Batang", serif;
+    font-size: 26px; font-weight: 700; margin: 0 0 8px; letter-spacing: .01em;
+  }
+  .sub { color: var(--soft); font-size: 14px; margin: 0; }
+
+  /* ── 로그인 ── */
+  .gate {
+    max-width: 400px;
+    background: var(--paper);
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    padding: 30px 26px;
+  }
+  label { display: block; font-size: 13px; font-weight: 600; margin-bottom: 8px; }
+  input {
+    width: 100%;
+    padding: 13px 14px;
+    font: inherit; font-size: 16px;
+    color: var(--ink); background: var(--sand);
+    border: 1px solid var(--line); border-radius: 9px;
+    appearance: none;
+  }
+  input:focus { outline: none; border-color: var(--sage); background: var(--paper); }
+
+  button {
+    width: 100%;
+    margin-top: 16px;
+    padding: 14px;
+    font-family: "Gowun Batang", serif;
+    font-size: 15px; font-weight: 700; letter-spacing: .05em;
+    color: var(--paper); background: var(--sage-dp);
+    border: none; border-radius: 9px; cursor: pointer;
+  }
+  @media (prefers-color-scheme: dark) { button { color: #1d1c19; } }
+  button:hover:not(:disabled) { opacity: .88; }
+  button:disabled { opacity: .45; cursor: default; }
+
+  .msg {
+    margin-top: 14px; padding: 12px 14px; border-radius: 9px;
+    font-size: 14px; display: none;
+    background: color-mix(in srgb, var(--alert) 11%, transparent);
+    color: var(--alert);
+  }
+  .msg.show { display: block; }
+
+  /* ── 요약 타일 ── */
+  .tiles {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+    gap: 12px;
+    margin-bottom: 30px;
+  }
+  .tile {
+    background: var(--paper);
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    padding: 18px 20px;
+  }
+  .tile dt {
+    font-size: 12px; color: var(--soft); margin: 0 0 6px;
+    letter-spacing: .04em;
+  }
+  .tile dd {
+    margin: 0;
+    font-family: "Gowun Batang", serif;
+    font-size: 26px; font-weight: 700;
+    font-variant-numeric: tabular-nums;
+    line-height: 1.2;
+  }
+  .tile dd small { font-size: 14px; font-weight: 400; color: var(--soft); margin-left: 3px; }
+
+  /* ── 프로그램 카드 ── */
+  h2 {
+    font-family: "Gowun Batang", serif;
+    font-size: 13px; font-weight: 700; letter-spacing: .16em;
+    color: var(--sage); text-transform: uppercase;
+    margin: 0 0 16px; padding-bottom: 14px;
+    border-bottom: 1px solid var(--line);
+  }
+
+  .prog {
+    background: var(--paper);
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    padding: 22px 24px;
+    margin-bottom: 14px;
+  }
+  .prog-head {
+    display: flex; flex-wrap: wrap; align-items: baseline;
+    gap: 10px; margin-bottom: 4px;
+  }
+  .prog-head h3 {
+    font-family: "Gowun Batang", serif;
+    font-size: 17px; font-weight: 700; margin: 0;
+  }
+  .pill {
+    font-size: 11.5px; font-weight: 600;
+    padding: 2px 10px; border-radius: 20px;
+    border: 1px solid transparent;
+  }
+  .pill.open  { background: color-mix(in srgb, var(--sage) 16%, transparent); color: var(--sage-dp); }
+  .pill.close { background: color-mix(in srgb, var(--clay) 16%, transparent); color: var(--clay); }
+  .pill.end   { background: var(--sand); color: var(--soft); border-color: var(--line); }
+  @media (prefers-color-scheme: dark) { .pill.open { color: var(--sage); } }
+
+  .prog .when { font-size: 13px; color: var(--soft); margin: 0 0 18px; }
+
+  /* 정원 게이지 */
+  .seats { margin-bottom: 18px; }
+  .seats-top {
+    display: flex; justify-content: space-between; align-items: baseline;
+    font-size: 13px; margin-bottom: 7px;
+  }
+  .seats-top b {
+    font-family: "Gowun Batang", serif;
+    font-size: 15px; font-variant-numeric: tabular-nums;
+  }
+  .seats-top .left { color: var(--soft); }
+  .seats-top .left.full { color: var(--alert); font-weight: 600; }
+  .bar {
+    height: 7px; background: var(--sand);
+    border: 1px solid var(--line); border-radius: 20px; overflow: hidden;
+  }
+  .bar i {
+    display: block; height: 100%;
+    background: var(--sage); border-radius: 20px;
+    transition: width .4s ease;
+  }
+  .bar i.full { background: var(--clay); }
+
+  /* 상태 분해 */
+  .breaks { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; }
+  @media (max-width: 560px) { .breaks { grid-template-columns: 1fr; } }
+
+  .break h4 {
+    font-size: 11.5px; font-weight: 600; letter-spacing: .1em;
+    color: var(--soft); margin: 0 0 8px; text-transform: uppercase;
+  }
+  .break dl { margin: 0; border-top: 1px solid var(--line); }
+  .break .r {
+    display: flex; justify-content: space-between;
+    font-size: 13.5px; padding: 5px 0;
+    border-bottom: 1px solid var(--line);
+  }
+  .break .r dt { margin: 0; color: var(--soft); }
+  .break .r dd { margin: 0; font-variant-numeric: tabular-nums; font-weight: 600; }
+  .break .r.zero dt, .break .r.zero dd { color: var(--soft); opacity: .5; font-weight: 400; }
+
+  nav { margin-top: 34px; text-align: center; font-size: 13.5px; }
+  nav a {
+    color: var(--soft); text-decoration: none;
+    border-bottom: 1px solid var(--line); padding-bottom: 2px; margin: 0 8px;
+  }
+  nav a:hover { color: var(--ink); border-color: var(--sage); }
+
+  .stamp { margin-top: 14px; text-align: center; font-size: 12px; color: var(--soft); opacity: .8; }
+</style>
+</head>
+<body>
+<div class="wrap" id="wrap">
+  <header>
+    <h1>운영 현황</h1>
+    <p class="sub">프로그램별 신청 현황과 남은 자리를 확인합니다.</p>
+  </header>
+
+  <form class="gate" id="gate">
+    <label for="password">관리자 비밀번호</label>
+    <input id="password" name="password" type="password" autocomplete="current-password" required>
+    <button type="submit" id="submit">확인</button>
+    <div class="msg" id="msg"></div>
+  </form>
+
+  <nav><a href="/">신청하기</a> · <a href="/my">내역 조회</a></nav>
+</div>
+
+<script>
+  const $ = (id) => document.getElementById(id);
+  const gate = $('gate'), msg = $('msg'), btn = $('submit');
+
+  const esc = (s) => String(s ?? '').replace(/[&<>"]/g, (c) =>
+    ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+  const won = (n) => '₩' + Number(n || 0).toLocaleString('ko-KR');
+
+  const PILL = { 모집중: 'open', 마감: 'close', 종료: 'end' };
+
+  function breakdown(title, obj) {
+    const rows = Object.entries(obj).map(([k, v]) =>
+      `<div class="r ${v === 0 ? 'zero' : ''}"><dt>${esc(k)}</dt><dd>${v}</dd></div>`).join('');
+    return `<div class="break"><h4>${title}</h4><dl>${rows}</dl></div>`;
+  }
+
+  function programCard(p) {
+    const pct = p.capacity ? Math.min(Math.round((p.seatsTaken / p.capacity) * 100), 100) : 0;
+    const full = p.capacity !== null && p.seatsLeft === 0;
+
+    const seats = p.capacity === null
+      ? `<div class="seats-top"><span>정원 미설정</span><b>${p.seatsTaken}명 신청</b></div>`
+      : `<div class="seats">
+           <div class="seats-top">
+             <span><b>${p.seatsTaken}</b> / ${p.capacity}명</span>
+             <span class="left ${full ? 'full' : ''}">
+               ${full ? '자리 마감' : '남은 자리 ' + p.seatsLeft + '석'}
+             </span>
+           </div>
+           <div class="bar"><i class="${full ? 'full' : ''}" style="width:${pct}%"></i></div>
+         </div>`;
+
+    return `
+      <div class="prog">
+        <div class="prog-head">
+          <h3>${esc(p.name)}</h3>
+          <span class="pill ${PILL[p.status] || 'end'}">${esc(p.status)}</span>
+        </div>
+        <p class="when">${esc(p.date)}${p.place ? ' · ' + esc(p.place) : ''} · 참가비 ${won(p.price)}</p>
+        ${seats}
+        <div class="breaks">
+          ${breakdown('신청상태', p.applyBreakdown)}
+          ${breakdown('입금상태', p.payBreakdown)}
+        </div>
+      </div>`;
+  }
+
+  function render(d) {
+    const o = d.overall;
+    const confirmed = o.apply['확정'] ?? 0;
+    const waiting = o.apply['대기'] ?? 0;
+    const unpaid = o.pay['미입금'] ?? 0;
+
+    $('wrap').innerHTML = `
+      <header>
+        <h1>운영 현황</h1>
+        <p class="sub">프로그램 ${d.programs.length}개 · 신청 ${o.total}건</p>
+      </header>
+
+      <dl class="tiles">
+        <div class="tile"><dt>전체 신청</dt><dd>${o.total}<small>건</small></dd></div>
+        <div class="tile"><dt>확정</dt><dd>${confirmed}<small>명</small></dd></div>
+        <div class="tile"><dt>대기</dt><dd>${waiting}<small>명</small></dd></div>
+        <div class="tile"><dt>미입금</dt><dd>${unpaid}<small>건</small></dd></div>
+        <div class="tile"><dt>입금 완료액</dt><dd style="font-size:20px">${won(d.totalRevenue)}</dd></div>
+      </dl>
+
+      <h2>프로그램별</h2>
+      ${d.programs.map(programCard).join('')}
+      ${o.orphan ? `<p class="stamp">프로그램이 연결되지 않은 신청 ${o.orphan}건은 집계에서 제외했습니다.</p>` : ''}
+
+      <nav><a href="/">신청하기</a> · <a href="/my">내역 조회</a> · <a href="/status">새로고침</a></nav>
+      <p class="stamp">${new Date(d.generatedAt).toLocaleString('ko-KR')} 기준</p>`;
+  }
+
+  gate.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    msg.classList.remove('show');
+    btn.disabled = true;
+    btn.textContent = '불러오는 중…';
+
+    try {
+      const res = await fetch('/api/status', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ password: $('password').value }),
+      });
+      const d = await res.json();
+
+      if (!d.ok) {
+        msg.textContent = d.message || '불러오지 못했습니다.';
+        msg.classList.add('show');
+        return;
+      }
+      render(d);
+    } catch {
+      msg.textContent = '네트워크 오류가 발생했습니다.';
+      msg.classList.add('show');
+    } finally {
+      btn.disabled = false;
+      btn.textContent = '확인';
+    }
+  });
+</script>
+</body>
+</html>

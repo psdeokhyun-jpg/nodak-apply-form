@@ -11,6 +11,7 @@
 import programsHandler from './api/programs.js'
 import { apply as applyHandler } from './api/apply.js'
 import myHandler from './api/my.js'
+import statusHandler from './api/status.js'
 
 const PORT = Number(process.env.PORT ?? 3000)
 
@@ -23,7 +24,9 @@ if (!process.env.AIRTABLE_API_KEY) {
 const page = (name: string) =>
   Bun.file(new URL(`./public/${name}`, import.meta.url)).text()
 
-const [indexHtml, myHtml] = await Promise.all([page('index.html'), page('my.html')])
+const [indexHtml, myHtml, statusHtml] = await Promise.all([
+  page('index.html'), page('my.html'), page('status.html'),
+])
 
 const serveHtml = (body: string) =>
   new Response(body, { headers: { 'Content-Type': 'text/html; charset=utf-8' } })
@@ -35,10 +38,12 @@ Bun.serve({
 
     if (req.method === 'GET' && pathname === '/') return serveHtml(indexHtml)
     if (req.method === 'GET' && pathname === '/my') return serveHtml(myHtml)
+    if (req.method === 'GET' && pathname === '/status') return serveHtml(statusHtml)
 
     if (pathname === '/api/programs') return programsHandler()
     if (pathname === '/api/apply') return applyHandler(req)
     if (pathname === '/api/my') return myHandler(req)
+    if (pathname === '/api/status') return statusHandler(req)
 
     return new Response('Not Found', { status: 404 })
   },

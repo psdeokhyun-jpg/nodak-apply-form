@@ -375,6 +375,117 @@ export async function lookup(name: string, phone: string) {
 }
 
 // ============================================
+// 운영 현황 (관리자)
+// ============================================
+
+/** 자리를 차지하는 상태. 대기·취소는 정원에서 빼지 않는다. */
+const SEAT_TAKING = new Set(['확정', '접수'])
+
+const APPLY_STATUSES = ['확정', '접수', '대기', '취소'] as const
+const PAY_STATUSES = ['입금확인', '미입금', '환불', '무료참여'] as const
+
+export interface ProgramStatus {
+  id: string
+  name: string
+  category: string
+  date: string
+  place: string
+  status: string
+  capacity: number | null
+  price: number
+  total: number
+  seatsTaken: number
+  seatsLeft: number | null
+  applyBreakdown: Record<string, number>
+  payBreakdown: Record<string, number>
+  revenue: number
+}
+
+/**
+ * 프로그램별 신청 현황 집계.
+ * 개인정보는 담지 않는다 — 숫자만 반환한다.
+ */
+export async function statusSummary() {
+  const [programsRes, applyRes] = await Promise.all([
+    airtable(TBL_PROGRAM, {}, { maxRecords: '500' }),
+    airtable(
+      TBL_APPLY,
+      {},
+      { 'fields[]': ['프로그램', '신청상태', '입금상태'], maxRecords: '5000' }
+    ),
+  ])
+
+  const zero = (keys: readonly string[]) =>
+    Object.fromEntries(keys.map((k) => [k, 0])) as Record<string, number>
+
+  const programs: ProgramStatus[] = programsRes.records.map((r: any) => ({
+    id: r.id,
+    name: r.fields['프로그램명'] ?? '(이름 없음)',
+    category: r.fields['구분'] ?? '',
+    date: r.fields['날짜'] ?? '',
+    place: r.fields['장소'] ?? '',
+    status: r.fields['모집상태'] ?? '',
+    capacity: typeof r.fields['정원'] === 'number' ? r.fields['정원'] : null,
+    price: r.fields['금액'] ?? 0,
+    total: 0,
+    seatsTaken: 0,
+    seatsLeft: null,
+    applyBreakdown: zero(APPLY_STATUSES),
+    payBreakdown: zero(PAY_STATUSES),
+    revenue: 0,
+  }))
+
+  const byId = new Map(programs.map((p) => [p.id, p]))
+  const overall = {
+    total: 0,
+    apply: zero(APPLY_STATUSES),
+    pay: zero(PAY_STATUSES),
+    orphan: 0, // 프로그램 링크가 없는 신청
+  }
+
+  for (const rec of applyRes.records) {
+    const f = rec.fields
+    const pid = (f['프로그램'] ?? [])[0]
+    const applyStatus = f['신청상태'] ?? '(미지정)'
+    const payStatus = f['입금상태'] ?? '(미지정)'
+
+    overall.total++
+    if (applyStatus in overall.apply) overall.apply[applyStatus]++
+    if (payStatus in overall.pay) overall.pay[payStatus]++
+
+    const p = pid ? byId.get(pid) : undefined
+    if (!p) {
+      overall.orphan++
+      continue
+    }
+
+    p.total++
+    if (applyStatus in p.applyBreakdown) p.applyBreakdown[applyStatus]++
+    if (payStatus in p.payBreakdown) p.payBreakdown[payStatus]++
+    if (SEAT_TAKING.has(applyStatus)) p.seatsTaken++
+    if (payStatus === '입금확인') p.revenue += p.price
+  }
+
+  for (const p of programs) {
+    p.seatsLeft = p.capacity === null ? null : Math.max(p.capacity - p.seatsTaken, 0)
+  }
+
+  programs.sort((a, b) => {
+    // 모집중을 위로, 그다음 날짜순
+    const rank = (s: string) => (s === '모집중' ? 0 : s === '마감' ? 1 : 2)
+    return rank(a.status) - rank(b.status) || String(a.date).localeCompare(String(b.date))
+  })
+
+  return {
+    ok: true as const,
+    generatedAt: new Date().toISOString(),
+    programs,
+    overall,
+    totalRevenue: programs.reduce((s, p) => s + p.revenue, 0),
+  }
+}
+
+// ============================================
 // 속도 제한
 // ============================================
 

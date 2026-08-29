@@ -4,6 +4,13 @@
   "buildCommand": null,
   "outputDirectory": "public",
   "rewrites": [
-    { "source": "/my", "destination": "/my.html" }
+    {
+      "source": "/my",
+      "destination": "/my.html"
+    },
+    {
+      "source": "/status",
+      "destination": "/status.html"
+    }
   ]
 }
