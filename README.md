@@ -2,6 +2,27 @@
 
 Airtable 베이스 `클코워크숍`(appBHziM1LClZiG2R)에 연결된 신청 폼입니다.
 
+## 배포된 주소
+
+- 신청 폼: https://nodak-apply-form.vercel.app
+- 내역 조회: https://nodak-apply-form.vercel.app/my
+
+배포는 `vercel --prod` 로 한다. GitHub 자동 배포는 아직 연결되지 않았다
+(Vercel 계정에 GitHub Login Connection 추가 필요 — 대시보드에서 직접 해야 함).
+
+## 파일 구조
+
+| 경로 | 역할 |
+|---|---|
+| `public/index.html` | 신청 폼 |
+| `public/my.html` | 내역 조회 |
+| `api/*.ts` | Vercel Edge Functions (배포본이 쓰는 API) |
+| `lib/airtable.ts` | Airtable 연동 + 도메인 로직 (로컬/배포 공유) |
+| `dev-server.ts` | 로컬 개발 서버 |
+
+> `dev-server.ts` 를 `server.ts` 로 되돌리지 말 것. Vercel이 루트의
+> `server.ts` 를 서버 진입점으로 자동 인식해서 `api/` 구성을 무시한다.
+
 ## 실행
 
 ```bash
