@@ -1,0 +1,290 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex,nofollow">
+<title>후기 분석</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Gowun+Batang:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --sand:    #f4f1ea;
+    --paper:   #fbfaf7;
+    --ink:     #3a3730;
+    --soft:    #8b8578;
+    --line:    #e0dbd0;
+    --sage:    #7d8f7a;
+    --sage-dp: #5f6f5d;
+    --clay:    #b08268;
+    --star:    #c9a227;
+    --alert:   #a4564a;
+    --radius:  14px;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --sand:    #1d1c19;
+      --paper:   #26241f;
+      --ink:     #eae6dc;
+      --soft:    #a09a8c;
+      --line:    #3a3730;
+      --sage:    #9db09a;
+      --sage-dp: #b3c4b0;
+      --clay:    #c9a086;
+      --star:    #e0be52;
+      --alert:   #e0a49a;
+    }
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    margin: 0;
+    background: var(--sand);
+    color: var(--ink);
+    font-family: -apple-system, BlinkMacSystemFont, "Apple SD Gothic Neo",
+      "Pretendard", system-ui, sans-serif;
+    line-height: 1.7;
+    -webkit-text-size-adjust: 100%;
+  }
+
+  .wrap { max-width: 860px; margin: 0 auto; padding: 48px 22px calc(64px + env(safe-area-inset-bottom)); }
+
+  header { margin-bottom: 30px; }
+  h1 { font-family: "Gowun Batang", serif; font-size: 26px; font-weight: 700; margin: 0 0 8px; }
+  .sub { color: var(--soft); font-size: 14px; margin: 0; }
+
+  /* ── 로그인 ── */
+  .gate {
+    max-width: 400px; background: var(--paper);
+    border: 1px solid var(--line); border-radius: var(--radius); padding: 30px 26px;
+  }
+  label { display: block; font-size: 13px; font-weight: 600; margin-bottom: 8px; }
+  input {
+    width: 100%; padding: 13px 14px; font: inherit; font-size: 16px;
+    color: var(--ink); background: var(--sand);
+    border: 1px solid var(--line); border-radius: 9px; appearance: none;
+  }
+  input:focus { outline: none; border-color: var(--sage); background: var(--paper); }
+
+  button {
+    width: 100%; margin-top: 16px; padding: 14px;
+    font-family: "Gowun Batang", serif; font-size: 15px; font-weight: 700; letter-spacing: .05em;
+    color: var(--paper); background: var(--sage-dp);
+    border: none; border-radius: 9px; cursor: pointer;
+  }
+  @media (prefers-color-scheme: dark) { button { color: #1d1c19; } }
+  button:hover:not(:disabled) { opacity: .88; }
+  button:disabled { opacity: .45; cursor: default; }
+
+  .msg {
+    margin-top: 14px; padding: 12px 14px; border-radius: 9px; font-size: 14px; display: none;
+    background: color-mix(in srgb, var(--alert) 11%, transparent); color: var(--alert);
+  }
+  .msg.show { display: block; }
+
+  /* ── 전체 요약 ── */
+  .hero {
+    background: var(--paper); border: 1px solid var(--line); border-radius: var(--radius);
+    padding: 26px 28px; margin-bottom: 30px;
+    display: flex; flex-wrap: wrap; gap: 34px; align-items: center;
+  }
+  .score { text-align: center; flex: none; }
+  .score .num {
+    font-family: "Gowun Batang", serif; font-size: 52px; font-weight: 700;
+    line-height: 1; font-variant-numeric: tabular-nums;
+  }
+  .score .num small { font-size: 20px; color: var(--soft); font-weight: 400; }
+  .score .cnt { font-size: 12.5px; color: var(--soft); margin-top: 6px; }
+
+  .dist { flex: 1; min-width: 260px; }
+  .drow { display: flex; align-items: center; gap: 10px; font-size: 12.5px; padding: 2px 0; }
+  .drow .lab { width: 30px; color: var(--soft); flex: none; font-variant-numeric: tabular-nums; }
+  .drow .track {
+    flex: 1; height: 8px; background: var(--sand);
+    border: 1px solid var(--line); border-radius: 20px; overflow: hidden;
+  }
+  .drow .track i { display: block; height: 100%; background: var(--star); border-radius: 20px; }
+  .drow .n { width: 26px; text-align: right; color: var(--soft); flex: none; font-variant-numeric: tabular-nums; }
+
+  .stars { color: var(--star); letter-spacing: .12em; }
+  .stars .off { color: var(--line); }
+
+  h2 {
+    font-family: "Gowun Batang", serif; font-size: 13px; font-weight: 700; letter-spacing: .16em;
+    color: var(--sage); text-transform: uppercase;
+    margin: 34px 0 16px; padding-bottom: 14px; border-bottom: 1px solid var(--line);
+  }
+  h2:first-of-type { margin-top: 0; }
+
+  /* ── 프로그램별 ── */
+  .prog {
+    background: var(--paper); border: 1px solid var(--line); border-radius: var(--radius);
+    padding: 20px 24px; margin-bottom: 12px;
+    display: flex; flex-wrap: wrap; gap: 22px; align-items: center;
+  }
+  .prog .who { flex: 1; min-width: 200px; }
+  .prog h3 { font-family: "Gowun Batang", serif; font-size: 16px; font-weight: 700; margin: 0 0 3px; }
+  .prog .when { font-size: 12.5px; color: var(--soft); }
+  .prog .avg { text-align: right; flex: none; }
+  .prog .avg .n {
+    font-family: "Gowun Batang", serif; font-size: 26px; font-weight: 700;
+    line-height: 1.1; font-variant-numeric: tabular-nums;
+  }
+  .prog .avg .c { font-size: 12px; color: var(--soft); }
+  .prog .mini { width: 190px; flex: none; }
+  @media (max-width: 620px) { .prog .mini { width: 100%; } }
+  .prog.none .avg .n { color: var(--soft); font-size: 15px; font-weight: 400; font-family: inherit; }
+
+  /* ── 최근 후기 ── */
+  .rev {
+    background: var(--paper); border: 1px solid var(--line); border-radius: var(--radius);
+    padding: 20px 24px; margin-bottom: 12px;
+  }
+  .rev-top {
+    display: flex; flex-wrap: wrap; align-items: baseline; gap: 10px; margin-bottom: 10px;
+  }
+  .rev-top .nm { font-weight: 600; font-size: 14.5px; }
+  .rev-top .pg { font-size: 12.5px; color: var(--soft); }
+  .rev-top .dt { margin-left: auto; font-size: 12.5px; color: var(--soft); font-variant-numeric: tabular-nums; }
+  .rev p { margin: 0; font-size: 14.5px; line-height: 1.75; word-break: keep-all; }
+
+  .empty {
+    background: var(--paper); border: 1px solid var(--line); border-radius: var(--radius);
+    padding: 30px; text-align: center; color: var(--soft); font-size: 14px;
+  }
+
+  nav { margin-top: 34px; text-align: center; font-size: 13.5px; }
+  nav a {
+    color: var(--soft); text-decoration: none;
+    border-bottom: 1px solid var(--line); padding-bottom: 2px; margin: 0 8px;
+  }
+  nav a:hover { color: var(--ink); border-color: var(--sage); }
+  .stamp { margin-top: 14px; text-align: center; font-size: 12px; color: var(--soft); opacity: .8; }
+</style>
+</head>
+<body>
+<div class="wrap" id="wrap">
+  <header>
+    <h1>후기 분석</h1>
+    <p class="sub">프로그램별 별점과 최근 후기를 확인합니다.</p>
+  </header>
+
+  <form class="gate" id="gate">
+    <label for="password">관리자 비밀번호</label>
+    <input id="password" name="password" type="password" autocomplete="current-password" required>
+    <button type="submit" id="submit">확인</button>
+    <div class="msg" id="msg"></div>
+  </form>
+
+  <nav><a href="/">신청하기</a> · <a href="/my">내역 조회</a> · <a href="/status">현황</a></nav>
+</div>
+
+<script>
+  const $ = (id) => document.getElementById(id);
+  const gate = $('gate'), msg = $('msg'), btn = $('submit');
+
+  const esc = (s) => String(s ?? '').replace(/[&<>"]/g, (c) =>
+    ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+
+  const starRow = (n) =>
+    `<span class="stars">${'★'.repeat(n)}<span class="off">${'★'.repeat(5 - n)}</span></span>`;
+
+  function distBars(dist, total) {
+    return [5, 4, 3, 2, 1].map((s) => {
+      const v = dist[s] || 0;
+      const pct = total ? Math.round((v / total) * 100) : 0;
+      return `<div class="drow">
+                <span class="lab">${s}점</span>
+                <span class="track"><i style="width:${pct}%"></i></span>
+                <span class="n">${v}</span>
+              </div>`;
+    }).join('');
+  }
+
+  function progCard(p) {
+    if (!p.count) {
+      return `<div class="prog none">
+        <div class="who"><h3>${esc(p.name)}</h3><div class="when">${esc(p.date)} · ${esc(p.status)}</div></div>
+        <div class="avg"><div class="n">아직 후기 없음</div></div>
+      </div>`;
+    }
+    return `<div class="prog">
+      <div class="who">
+        <h3>${esc(p.name)}</h3>
+        <div class="when">${esc(p.date)} · ${esc(p.status)}</div>
+      </div>
+      <div class="mini">${distBars(p.dist, p.count)}</div>
+      <div class="avg">
+        <div class="n">${p.average.toFixed(1)}</div>
+        <div>${starRow(Math.round(p.average))}</div>
+        <div class="c">후기 ${p.count}건</div>
+      </div>
+    </div>`;
+  }
+
+  function render(d) {
+    const o = d.overall;
+    const hero = o.count
+      ? `<div class="hero">
+           <div class="score">
+             <div class="num">${o.average.toFixed(1)}<small> / 5</small></div>
+             <div>${starRow(Math.round(o.average))}</div>
+             <div class="cnt">전체 후기 ${o.count}건</div>
+           </div>
+           <div class="dist">${distBars(o.dist, o.count)}</div>
+         </div>`
+      : `<div class="empty">아직 등록된 후기가 없습니다.</div>`;
+
+    const revs = d.recent.length
+      ? d.recent.map((r) => `
+          <div class="rev">
+            <div class="rev-top">
+              <span class="nm">${esc(r.name)}</span>
+              <span class="pg">${esc(r.program)}</span>
+              <span>${starRow(r.stars)}</span>
+              <span class="dt">${esc(r.writtenAt)}</span>
+            </div>
+            <p>${esc(r.text)}</p>
+          </div>`).join('')
+      : `<div class="empty">표시할 후기가 없습니다.</div>`;
+
+    $('wrap').innerHTML = `
+      <header>
+        <h1>후기 분석</h1>
+        <p class="sub">프로그램 ${d.programs.length}개 · 후기 ${o.count}건</p>
+      </header>
+      ${hero}
+      <h2>프로그램별</h2>
+      ${d.programs.map(progCard).join('')}
+      <h2>최근 후기</h2>
+      ${revs}
+      <nav><a href="/">신청하기</a> · <a href="/my">내역 조회</a> · <a href="/status">현황</a> · <a href="/reviews">새로고침</a></nav>
+      <p class="stamp">${new Date(d.generatedAt).toLocaleString('ko-KR')} 기준</p>`;
+  }
+
+  gate.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    msg.classList.remove('show');
+    btn.disabled = true; btn.textContent = '불러오는 중…';
+    try {
+      const res = await fetch('/api/reviews', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ password: $('password').value }),
+      });
+      const d = await res.json();
+      if (!d.ok) { msg.textContent = d.message || '불러오지 못했습니다.'; msg.classList.add('show'); return; }
+      render(d);
+    } catch {
+      msg.textContent = '네트워크 오류가 발생했습니다.';
+      msg.classList.add('show');
+    } finally {
+      btn.disabled = false; btn.textContent = '확인';
+    }
+  });
+</script>
+</body>
+</html>

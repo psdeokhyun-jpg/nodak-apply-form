@@ -11,6 +11,10 @@
     {
       "source": "/status",
       "destination": "/status.html"
+    },
+    {
+      "source": "/reviews",
+      "destination": "/reviews.html"
     }
   ]
 }

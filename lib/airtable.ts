@@ -486,6 +486,123 @@ export async function statusSummary() {
 }
 
 // ============================================
+// 후기 분석
+// ============================================
+
+const TBL_REVIEW = process.env.AIRTABLE_TBL_REVIEW ?? 'tbleZr7RMrb5jMUwb'
+
+/**
+ * 프로그램별 별점 집계와 최근 후기.
+ *
+ * 후기 본문은 작성자가 공개를 전제로 쓴 글이라 이름과 함께 보여주되,
+ * 연락처 같은 식별 정보는 담지 않는다.
+ */
+export async function reviewSummary(recentLimit = 12) {
+  const [programsRes, reviewRes, memberRes] = await Promise.all([
+    airtable(TBL_PROGRAM, {}, { maxRecords: '500' }),
+    airtable(TBL_REVIEW, {}, { maxRecords: '5000' }),
+    airtable(TBL_MEMBER, {}, { 'fields[]': ['이름'], maxRecords: '5000' }),
+  ])
+
+  const memberName = new Map<string, string>(
+    memberRes.records.map((r: any) => [r.id, r.fields['이름'] ?? ''])
+  )
+
+  const emptyDist = () => ({ 1: 0, 2: 0, 3: 0, 4: 0, 5: 0 }) as Record<number, number>
+
+  interface ProgramReview {
+    id: string
+    name: string
+    date: string
+    status: string
+    count: number
+    sum: number
+    average: number | null
+    dist: Record<number, number>
+  }
+
+  const programs: ProgramReview[] = programsRes.records.map((r: any) => ({
+    id: r.id,
+    name: r.fields['프로그램명'] ?? '(이름 없음)',
+    date: r.fields['날짜'] ?? '',
+    status: r.fields['모집상태'] ?? '',
+    count: 0,
+    sum: 0,
+    average: null,
+    dist: emptyDist(),
+  }))
+  const byId = new Map<string, ProgramReview>(programs.map((p) => [p.id, p]))
+
+  const overallDist = emptyDist()
+  let overallSum = 0
+  let overallCount = 0
+
+  const recent: {
+    id: string
+    reviewNo: string
+    name: string
+    program: string
+    stars: number
+    text: string
+    writtenAt: string
+  }[] = []
+
+  for (const rec of reviewRes.records) {
+    const f = rec.fields
+    if (f['공개'] === false) continue // 비공개 후기는 집계·목록에서 제외
+
+    const stars = Number(f['별점'])
+    const pid = (f['프로그램'] ?? [])[0]
+    const p = pid ? byId.get(pid) : undefined
+
+    if (Number.isInteger(stars) && stars >= 1 && stars <= 5) {
+      overallDist[stars]++
+      overallSum += stars
+      overallCount++
+      if (p) {
+        p.dist[stars]++
+        p.sum += stars
+        p.count++
+      }
+    }
+
+    recent.push({
+      id: rec.id,
+      reviewNo: f['후기번호'] ?? '',
+      name: memberName.get((f['멤버'] ?? [])[0]) ?? '익명',
+      program: p?.name ?? '(삭제된 프로그램)',
+      stars: Number.isFinite(stars) ? stars : 0,
+      text: f['후기'] ?? '',
+      writtenAt: f['작성일'] ?? '',
+    })
+  }
+
+  for (const p of programs) {
+    p.average = p.count ? Math.round((p.sum / p.count) * 10) / 10 : null
+  }
+
+  // 후기가 있는 프로그램을 위로, 그다음 평점 높은 순
+  programs.sort(
+    (a: ProgramReview, b: ProgramReview) =>
+      (b.count ? 1 : 0) - (a.count ? 1 : 0) || (b.average ?? 0) - (a.average ?? 0)
+  )
+
+  recent.sort((a, b) => String(b.writtenAt).localeCompare(String(a.writtenAt)))
+
+  return {
+    ok: true as const,
+    generatedAt: new Date().toISOString(),
+    programs,
+    overall: {
+      count: overallCount,
+      average: overallCount ? Math.round((overallSum / overallCount) * 10) / 10 : null,
+      dist: overallDist,
+    },
+    recent: recent.slice(0, recentLimit),
+  }
+}
+
+// ============================================
 // 속도 제한
 // ============================================
 
