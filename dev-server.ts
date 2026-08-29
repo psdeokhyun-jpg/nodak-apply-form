@@ -8,9 +8,9 @@
  * 실행: bun run server.ts   (AIRTABLE_API_KEY 환경변수 필요)
  */
 
-import programsHandler from './api/programs'
-import { apply as applyHandler } from './api/apply'
-import myHandler from './api/my'
+import programsHandler from './api/programs.js'
+import { apply as applyHandler } from './api/apply.js'
+import myHandler from './api/my.js'
 
 const PORT = Number(process.env.PORT ?? 3000)
 

@@ -1,5 +1,5 @@
-import { submit, validate, formatPhone, rateLimited, clientIp, json } from '../lib/airtable'
-import { sendReceipt } from '../lib/mail'
+import { submit, validate, formatPhone, rateLimited, clientIp, json } from '../lib/airtable.js'
+import { sendReceipt } from '../lib/mail.js'
 
 // Edge가 아니라 Node 런타임이어야 한다 — 접수 확인 메일이 SMTP(raw TCP)를 쓴다.
 export const config = { runtime: 'nodejs' }

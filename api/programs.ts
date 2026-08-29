@@ -1,4 +1,4 @@
-import { listOpenPrograms, json } from '../lib/airtable'
+import { listOpenPrograms, json } from '../lib/airtable.js'
 
 export const config = { runtime: 'edge' }
 

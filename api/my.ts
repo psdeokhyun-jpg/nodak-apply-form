@@ -1,4 +1,4 @@
-import { lookup, digits, formatPhone, rateLimited, clientIp, json } from '../lib/airtable'
+import { lookup, digits, formatPhone, rateLimited, clientIp, json } from '../lib/airtable.js'
 
 export const config = { runtime: 'edge' }
 
