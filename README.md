@@ -7,7 +7,8 @@ Airtable 베이스 `클코워크숍`(appBHziM1LClZiG2R)에 연결된 신청 폼�
 - 신청 폼: https://nodak-apply-form.vercel.app
 - 내역 조회: https://nodak-apply-form.vercel.app/my
 
-배포는 `vercel --prod` 로 한다. GitHub 자동 배포는 아직 연결되지 않았다
+배포는 main 브랜치 푸시 시 자동으로 이뤄진다 (Vercel ↔ GitHub 연결됨).
+수동 배포는 `vercel --prod`.
 (Vercel 계정에 GitHub Login Connection 추가 필요 — 대시보드에서 직접 해야 함).
 
 ## 파일 구조
