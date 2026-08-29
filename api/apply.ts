@@ -7,7 +7,8 @@ export const config = { runtime: 'nodejs' }
 /** 공개 배포라 신청 API에도 속도 제한을 건다 (IP당 분당 5건) */
 const MAX_PER_MIN = 5
 
-export default async function handler(req: Request): Promise<Response> {
+/** 실제 로직. 로컬 개발 서버(dev-server.ts)가 이걸 직접 부른다. */
+export async function apply(req: Request): Promise<Response> {
   if (req.method !== 'POST') return json({ ok: false, message: '잘못된 요청입니다.' }, 405)
 
   const ip = clientIp(req.headers)
@@ -71,4 +72,29 @@ export default async function handler(req: Request): Promise<Response> {
     name: result.name,
     mailSent: mail.sent,
   })
+}
+
+/**
+ * Vercel Node 런타임 어댑터.
+ *
+ * Edge 런타임은 (Request) -> Response 시그니처를 받지만
+ * Node 런타임은 (req, res) 를 기대한다. 메일 발송(SMTP)이 Node를 요구하므로
+ * 로직은 Web 표준으로 두고 여기서만 변환한다.
+ */
+export default async function handler(req: any, res: any): Promise<void> {
+  const hasBody = req.method === 'POST'
+  const body =
+    typeof req.body === 'string' ? req.body : req.body ? JSON.stringify(req.body) : undefined
+
+  const request = new Request('https://local/api/apply', {
+    method: req.method,
+    headers: req.headers as Record<string, string>,
+    body: hasBody ? body ?? '{}' : undefined,
+  })
+
+  const out = await apply(request)
+
+  res.statusCode = out.status
+  out.headers.forEach((v: string, k: string) => res.setHeader(k, v))
+  res.end(await out.text())
 }

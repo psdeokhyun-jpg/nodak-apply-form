@@ -9,7 +9,7 @@
  */
 
 import programsHandler from './api/programs'
-import applyHandler from './api/apply'
+import { apply as applyHandler } from './api/apply'
 import myHandler from './api/my'
 
 const PORT = Number(process.env.PORT ?? 3000)
