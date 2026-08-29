@@ -208,8 +208,21 @@ async function nextApplyNo(): Promise<string> {
   return `${prefix}${String(max + 1).padStart(3, '0')}`
 }
 
-export async function submit(f: Record<string, string>) {
-  if (!(await programExists(f.programId))) {
+export type SubmitResult =
+  | { ok: false; code: string; message: string }
+  | {
+      ok: true
+      applyNo: string
+      memberIsNew: boolean
+      name: string
+      email: string
+      program: { name: string; date: string; place: string; price: number }
+    }
+
+export async function submit(f: Record<string, string>): Promise<SubmitResult> {
+  const programs = await programMap()
+  const program = programs.get(f.programId)
+  if (!program) {
     return { ok: false, code: 'BAD_PROGRAM', message: '선택한 프로그램을 찾을 수 없습니다.' }
   }
 
@@ -239,9 +252,17 @@ export async function submit(f: Record<string, string>) {
 
   return {
     ok: true,
-    applyNo: record.fields['신청번호'],
+    applyNo: record.fields['신청번호'] as string,
     memberIsNew: member.isNew,
-    name: member.name,
+    name: member.name as string,
+    // 접수 확인 메일에 쓰인다 (브라우저 응답에도 포함되지만 본인이 방금 입력한 값이다)
+    email: normEmail(f.email),
+    program: {
+      name: (program.name ?? '') as string,
+      date: (program.date ?? '') as string,
+      place: (program.place ?? '') as string,
+      price: (program.price ?? 0) as number,
+    },
   }
 }
 
