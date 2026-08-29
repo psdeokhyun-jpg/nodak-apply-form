@@ -9,5 +9,5 @@
     "noEmit": true,
     "types": ["node", "bun"]
   },
-  "include": ["api/**/*.ts", "lib/**/*.ts", "server.ts"]
+  "include": ["api/**/*.ts", "lib/**/*.ts", "dev-server.ts"]
 }

@@ -5,7 +5,7 @@ Airtable 베이스 `클코워크숍`(appBHziM1LClZiG2R)에 연결된 신청 폼�
 ## 실행
 
 ```bash
-bun run server.ts
+bun run dev-server.ts
 ```
 
 `http://localhost:3000` 접속.

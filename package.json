@@ -3,7 +3,7 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "dev": "bun run server.ts"
+    "dev": "bun run dev-server.ts"
   },
   "devDependencies": {
     "@types/bun": "^1.4.0",
