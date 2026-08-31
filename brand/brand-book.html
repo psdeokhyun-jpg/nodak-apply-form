@@ -1,0 +1,1054 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="light dark">
+<title>릴라그라운드</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Gowun+Batang:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --sand:      #f4f1ea;
+    --paper:     #fbfaf7;
+    --paper-2:   #ffffff;
+    --ink:       #3a3730;
+    --soft:      #8b8578;
+    --faint:     #b3ada0;
+    --line:      #e0dbd0;
+    --line-2:    #ececE4;
+    --sage:      #7d8f7a;
+    --sage-dp:   #5f6f5d;
+    --sage-tint: #eef1ec;
+    --clay:      #b08268;
+    --clay-tint: #f3e9e2;
+    --alert:     #a4564a;
+    --shadow:    0 1px 2px rgba(58,55,48,.05), 0 8px 24px -12px rgba(58,55,48,.12);
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --sand:      #1d1c19;
+      --paper:     #26241f;
+      --paper-2:   #201f1b;
+      --ink:       #eae6dc;
+      --soft:      #a49e90;
+      --faint:     #746e60;
+      --line:      #3a3730;
+      --line-2:    #322f29;
+      --sage:      #9db09a;
+      --sage-dp:   #b3c4b0;
+      --sage-tint: #26302a;
+      --clay:      #c9a086;
+      --clay-tint: #332822;
+      --alert:     #e0a49a;
+      --shadow:    0 1px 2px rgba(0,0,0,.2), 0 8px 24px -12px rgba(0,0,0,.4);
+    }
+  }
+  :root[data-theme="dark"] {
+    --sand:      #1d1c19;
+    --paper:     #26241f;
+    --paper-2:   #201f1b;
+    --ink:       #eae6dc;
+    --soft:      #a49e90;
+    --faint:     #746e60;
+    --line:      #3a3730;
+    --line-2:    #322f29;
+    --sage:      #9db09a;
+    --sage-dp:   #b3c4b0;
+    --sage-tint: #26302a;
+    --clay:      #c9a086;
+    --clay-tint: #332822;
+    --alert:     #e0a49a;
+    --shadow:    0 1px 2px rgba(0,0,0,.2), 0 8px 24px -12px rgba(0,0,0,.4);
+  }
+
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  @media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
+
+  body {
+    margin: 0;
+    background: var(--sand);
+    color: var(--ink);
+    font-family: -apple-system, BlinkMacSystemFont, "Apple SD Gothic Neo", "Pretendard", system-ui, sans-serif;
+    line-height: 1.7;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  .serif { font-family: "Gowun Batang", "Apple SD Gothic Neo", serif; }
+
+  h1, h2, h3, h4 { text-wrap: balance; margin: 0; }
+
+  a { color: inherit; }
+
+  ::selection { background: var(--sage-tint); color: var(--ink); }
+
+  /* ───────── 레이아웃 골격 ───────── */
+
+  .doc { max-width: 880px; margin: 0 auto; padding: 0 28px; }
+  .doc-narrow { max-width: 700px; margin: 0 auto; padding: 0 28px; }
+
+  section { padding: 96px 0; border-bottom: 1px solid var(--line); }
+  section:last-of-type { border-bottom: none; }
+
+  .kicker {
+    font-family: "Gowun Batang", serif;
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: .28em;
+    text-transform: uppercase;
+    color: var(--sage-dp);
+    margin: 0 0 18px;
+  }
+  .kicker .n { color: var(--clay); margin-right: 10px; }
+
+  .lede {
+    font-size: 16.5px;
+    color: var(--soft);
+    max-width: 56ch;
+    margin: 20px 0 0;
+    line-height: 1.85;
+  }
+
+  .section-head { margin-bottom: 56px; }
+  .section-head h2 {
+    font-size: 34px;
+    font-weight: 700;
+    line-height: 1.32;
+    letter-spacing: -.01em;
+  }
+
+  /* ───────── halo 모티프 (포스터 자산에서 그대로 계승) ───────── */
+
+  .halo {
+    position: absolute;
+    border-radius: 50%;
+    border: 1px solid var(--line);
+    pointer-events: none;
+  }
+
+  /* ───────── 표지 ───────── */
+
+  .cover {
+    position: relative;
+    min-height: 92vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    overflow: hidden;
+    border-bottom: 1px solid var(--line);
+  }
+  .cover .halo.a { width: 620px; height: 620px; top: -260px; right: -220px; }
+  .cover .halo.b { width: 380px; height: 380px; bottom: -180px; left: -140px; }
+  .cover .halo.c { width: 210px; height: 210px; bottom: 60px; right: 8%; opacity: .6; }
+
+  .cover-inner { position: relative; }
+
+  .mark-lg {
+    width: 68px; height: 68px;
+    color: var(--sage);
+    margin-bottom: 34px;
+  }
+
+  .cover h1 {
+    font-size: clamp(46px, 7vw, 74px);
+    font-weight: 700;
+    letter-spacing: -.01em;
+    line-height: 1.08;
+    margin-bottom: 22px;
+  }
+
+  .cover .role {
+    font-size: 17px;
+    color: var(--soft);
+    max-width: 44ch;
+    line-height: 1.8;
+    margin-bottom: 44px;
+  }
+
+  .cover-meta {
+    display: flex;
+    gap: 34px;
+    flex-wrap: wrap;
+    padding-top: 26px;
+    border-top: 1px solid var(--line);
+  }
+  .cover-meta div { font-size: 12.5px; }
+  .cover-meta dt { color: var(--faint); letter-spacing: .06em; margin-bottom: 5px; }
+  .cover-meta dd { margin: 0; font-weight: 600; }
+
+  /* ───────── 목차 ───────── */
+
+  .toc { padding: 56px 0 88px; }
+  .toc ol {
+    list-style: none;
+    margin: 0; padding: 0;
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 0 40px;
+  }
+  @media (max-width: 640px) { .toc ol { grid-template-columns: 1fr; } }
+  .toc li {
+    display: flex;
+    align-items: baseline;
+    gap: 14px;
+    padding: 15px 0;
+    border-bottom: 1px solid var(--line);
+    font-size: 15px;
+  }
+  .toc li a { text-decoration: none; }
+  .toc li a:hover .toc-title { color: var(--sage-dp); }
+  .toc-n {
+    font-family: "Gowun Batang", serif;
+    font-size: 13px;
+    color: var(--clay);
+    font-variant-numeric: tabular-nums;
+    flex: none;
+  }
+  .toc-title { font-weight: 600; transition: color .15s ease; }
+  .toc-sub { color: var(--soft); font-size: 12.5px; margin-left: auto; padding-left: 12px; flex: none; }
+
+  /* ───────── 원칙 카드 ───────── */
+
+  .principles {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1px;
+    background: var(--line);
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    overflow: hidden;
+  }
+  @media (max-width: 720px) { .principles { grid-template-columns: 1fr; } }
+  .principle {
+    background: var(--paper);
+    padding: 34px 28px;
+  }
+  .principle .num {
+    font-family: "Gowun Batang", serif;
+    font-size: 13px;
+    color: var(--sage-dp);
+    letter-spacing: .1em;
+    margin-bottom: 18px;
+  }
+  .principle h3 {
+    font-family: "Gowun Batang", serif;
+    font-size: 19px;
+    font-weight: 700;
+    margin-bottom: 10px;
+  }
+  .principle p { font-size: 13.8px; color: var(--soft); margin: 0; line-height: 1.75; }
+
+  /* ───────── 팔레트 ───────── */
+
+  .swatches {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 18px;
+  }
+  @media (max-width: 640px) { .swatches { grid-template-columns: repeat(2, 1fr); } }
+
+  .swatch {
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    overflow: hidden;
+    background: var(--paper);
+    box-shadow: var(--shadow);
+  }
+  .swatch .chip { height: 96px; }
+  .swatch .info { padding: 14px 16px 16px; }
+  .swatch .name {
+    font-family: "Gowun Batang", serif;
+    font-size: 15px;
+    font-weight: 700;
+    margin-bottom: 3px;
+  }
+  .swatch .role { font-size: 11.5px; color: var(--soft); margin-bottom: 10px; }
+  .swatch code {
+    display: block;
+    font-size: 11.5px;
+    letter-spacing: .02em;
+    color: var(--soft);
+    font-variant-numeric: tabular-nums;
+    padding-top: 9px;
+    border-top: 1px solid var(--line);
+  }
+
+  .neutral-strip {
+    display: flex;
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    overflow: hidden;
+    margin-top: 18px;
+  }
+  .neutral-strip div {
+    flex: 1;
+    height: 64px;
+    display: flex;
+    align-items: flex-end;
+    padding: 8px 10px;
+    font-size: 10.5px;
+    color: var(--soft);
+  }
+
+  /* ───────── 타이포그래피 ───────── */
+
+  .type-row {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 24px;
+    padding: 26px 0;
+    border-bottom: 1px solid var(--line);
+  }
+  .type-row:first-of-type { border-top: 1px solid var(--line); }
+  .type-row .sample { font-weight: 700; letter-spacing: -.01em; }
+  .type-row .meta { flex: none; text-align: right; font-size: 12px; color: var(--soft); line-height: 1.6; }
+  .type-row .meta b { display: block; color: var(--ink); font-size: 12.5px; font-weight: 600; }
+
+  .type-spec {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 40px;
+    margin-top: 48px;
+  }
+  @media (max-width: 640px) { .type-spec { grid-template-columns: 1fr; } }
+  .type-spec .card {
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    padding: 28px 26px;
+    background: var(--paper);
+  }
+  .type-spec .card h4 {
+    font-size: 11.5px;
+    letter-spacing: .14em;
+    text-transform: uppercase;
+    color: var(--sage-dp);
+    margin-bottom: 18px;
+  }
+  .type-spec .glyphs { font-size: 42px; line-height: 1.3; margin-bottom: 14px; }
+  .type-spec .stack { font-size: 12px; color: var(--soft); font-family: inherit; }
+  .type-spec .num-demo {
+    font-variant-numeric: tabular-nums;
+    font-size: 26px;
+    font-weight: 700;
+    margin-top: 6px;
+  }
+
+  /* ───────── 마크 ───────── */
+
+  .mark-block {
+    display: grid;
+    grid-template-columns: 280px 1fr;
+    gap: 48px;
+    align-items: center;
+  }
+  @media (max-width: 640px) { .mark-block { grid-template-columns: 1fr; } }
+  .mark-stage {
+    position: relative;
+    aspect-ratio: 1;
+    border: 1px solid var(--line);
+    border-radius: 18px;
+    background: var(--paper);
+    display: grid;
+    place-items: center;
+  }
+  .mark-stage svg { width: 42%; height: 42%; color: var(--sage); }
+  .mark-rules dl { margin: 0; }
+  .mark-rules .r { display: flex; gap: 18px; padding: 14px 0; border-bottom: 1px solid var(--line); }
+  .mark-rules .r dt { flex: none; width: 92px; font-size: 12.5px; color: var(--soft); }
+  .mark-rules .r dd { margin: 0; font-size: 14px; }
+
+  .clearspace-demo {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 1;
+    display: grid;
+    place-items: center;
+  }
+  .clearspace-demo svg.mk { width: 30%; color: var(--sage); }
+  .clearspace-demo .box {
+    position: absolute;
+    inset: 22%;
+    border: 1px dashed var(--faint);
+    border-radius: 6px;
+  }
+
+  .dont-row {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 14px;
+    margin-top: 20px;
+  }
+  @media (max-width: 640px) { .dont-row { grid-template-columns: 1fr; } }
+  .dont {
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    padding: 20px;
+    background: var(--paper);
+    text-align: center;
+  }
+  .dont .stage { height: 74px; display: grid; place-items: center; margin-bottom: 14px; }
+  .dont .stage svg { color: var(--faint); }
+  .dont p { margin: 0; font-size: 12.5px; color: var(--alert); }
+
+  /* ───────── 보이스 ───────── */
+
+  .voice-principles { display: grid; gap: 14px; margin-bottom: 56px; }
+  .voice-p {
+    display: grid;
+    grid-template-columns: 160px 1fr;
+    gap: 20px;
+    padding: 20px 0;
+    border-bottom: 1px solid var(--line);
+  }
+  @media (max-width: 620px) { .voice-p { grid-template-columns: 1fr; gap: 6px; } }
+  .voice-p .term { font-family: "Gowun Batang", serif; font-weight: 700; font-size: 15.5px; }
+  .voice-p .desc { font-size: 14px; color: var(--soft); line-height: 1.75; }
+
+  .quote-wall {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 16px;
+  }
+  @media (max-width: 640px) { .quote-wall { grid-template-columns: 1fr; } }
+  .quote {
+    background: var(--paper);
+    border: 1px solid var(--line);
+    border-left: 2px solid var(--sage);
+    border-radius: 0 12px 12px 0;
+    padding: 20px 22px;
+  }
+  .quote p {
+    font-family: "Gowun Batang", serif;
+    font-size: 15.5px;
+    line-height: 1.75;
+    margin: 0 0 10px;
+  }
+  .quote .src { font-size: 11.5px; color: var(--soft); letter-spacing: .02em; }
+
+  .tone-table { width: 100%; border-collapse: collapse; margin-top: 8px; }
+  .tone-table th, .tone-table td {
+    text-align: left;
+    padding: 13px 16px;
+    border-bottom: 1px solid var(--line);
+    font-size: 13.8px;
+    vertical-align: top;
+  }
+  .tone-table th {
+    font-size: 11px;
+    letter-spacing: .1em;
+    text-transform: uppercase;
+    color: var(--faint);
+    font-weight: 600;
+  }
+  .tone-table td.do { color: var(--sage-dp); font-weight: 600; }
+  .tone-table td.dont { color: var(--alert); }
+  .tone-table-wrap { overflow-x: auto; border: 1px solid var(--line); border-radius: 14px; }
+  .tone-table-wrap table { margin-top: 0; }
+  .tone-table-wrap tr:last-child td { border-bottom: none; }
+
+  /* ───────── UI 패턴 ───────── */
+
+  .pattern-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; }
+  @media (max-width: 720px) { .pattern-grid { grid-template-columns: 1fr 1fr; } }
+  @media (max-width: 480px) { .pattern-grid { grid-template-columns: 1fr; } }
+  .pattern {
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    padding: 22px 20px;
+    background: var(--paper);
+  }
+  .pattern h4 { font-size: 13px; font-weight: 700; margin-bottom: 12px; }
+  .pattern .demo { margin-bottom: 14px; }
+  .pattern p.note { font-size: 12px; color: var(--soft); margin: 0; line-height: 1.65; }
+
+  /* mini demo widgets */
+  .mini-input {
+    padding: 11px 12px; font-size: 13px; border: 1px solid var(--line);
+    border-radius: 9px; background: var(--sand); color: var(--soft);
+  }
+  .mini-btn {
+    display: inline-block; padding: 10px 20px;
+    font-family: "Gowun Batang", serif; font-size: 13px; font-weight: 700;
+    letter-spacing: .04em; color: var(--paper); background: var(--sage-dp);
+    border-radius: 9px;
+  }
+  :root[data-theme="dark"] .mini-btn { color: #1d1c19; }
+  @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .mini-btn { color: #1d1c19; } }
+  .mini-legend {
+    font-family: "Gowun Batang", serif; font-size: 10.5px; font-weight: 700;
+    letter-spacing: .16em; color: var(--sage); text-transform: uppercase;
+    padding-bottom: 10px; border-bottom: 1px solid var(--line); margin-bottom: 10px;
+  }
+  .mini-pill {
+    display: inline-block; font-size: 11px; padding: 4px 10px; border-radius: 20px;
+    background: color-mix(in srgb, var(--sage) 16%, transparent); color: var(--sage-dp);
+    font-weight: 600;
+  }
+  .mini-bar { height: 7px; background: var(--sand); border: 1px solid var(--line); border-radius: 20px; overflow: hidden; }
+  .mini-bar i { display: block; height: 100%; width: 62%; background: var(--sage); border-radius: 20px; }
+  .mini-hint { font-size: 11.5px; color: var(--soft); margin-top: 8px; line-height: 1.6; }
+  .mini-quote {
+    background: var(--sand); border-left: 2px solid var(--sage); border-radius: 0 8px 8px 0;
+    padding: 12px 14px; font-size: 12px; color: var(--ink); line-height: 1.65;
+  }
+
+  /* ───────── 적용 갤러리 ───────── */
+
+  .app-gallery { display: grid; grid-template-columns: repeat(2, 1fr); gap: 22px; }
+  @media (max-width: 700px) { .app-gallery { grid-template-columns: 1fr; } }
+  .app-card {
+    border: 1px solid var(--line);
+    border-radius: 16px;
+    overflow: hidden;
+    background: var(--paper);
+    box-shadow: var(--shadow);
+  }
+  .app-card .stage {
+    background: var(--sand);
+    padding: 30px 26px;
+    min-height: 200px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+  }
+  .app-card .cap {
+    padding: 16px 20px;
+    border-top: 1px solid var(--line);
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+  }
+  .app-card .cap b { font-size: 13.5px; }
+  .app-card .cap span { font-size: 11.5px; color: var(--soft); }
+
+  /* form mock */
+  .mock-form-head { display: flex; align-items: center; gap: 10px; margin-bottom: 18px; }
+  .mock-form-head svg { width: 26px; height: 26px; color: var(--sage); }
+  .mock-form-head b { font-family: "Gowun Batang", serif; font-size: 17px; }
+  .mock-field { margin-bottom: 10px; }
+  .mock-field label { display: block; font-size: 10.5px; font-weight: 600; margin-bottom: 5px; color: var(--soft); }
+
+  /* mail mock */
+  .mock-mail { background: var(--paper-2); border: 1px solid var(--line); border-radius: 12px; padding: 22px 20px; text-align: center; }
+  .mock-mail .dots { color: var(--sage); font-size: 10px; letter-spacing: .3em; margin-bottom: 12px; }
+  .mock-mail h5 { font-family: "Gowun Batang", serif; font-size: 16px; margin-bottom: 8px; }
+  .mock-mail p { font-size: 11.5px; color: var(--soft); margin: 0; }
+
+  /* poster mock */
+  .mock-poster { position: relative; overflow: hidden; border-radius: 10px; background: var(--sand); border: 1px solid var(--line); padding: 22px; }
+  .mock-poster .h { position: absolute; border-radius: 50%; border: 1px solid var(--line); }
+  .mock-poster .h.a { width: 130px; height: 130px; top: -50px; right: -40px; }
+  .mock-poster .kick { position: relative; font-family: "Gowun Batang", serif; font-size: 10px; letter-spacing: .2em; color: var(--sage); margin-bottom: 8px; }
+  .mock-poster h5 { position: relative; font-family: "Gowun Batang", serif; font-size: 21px; line-height: 1.3; margin-bottom: 10px; }
+  .mock-poster .date { position: relative; font-family: "Gowun Batang", serif; font-size: 28px; font-variant-numeric: tabular-nums; font-weight: 700; }
+
+  /* dashboard mock */
+  .mock-dash .row { display: flex; justify-content: space-between; align-items: center; padding: 8px 0; border-bottom: 1px solid var(--line); font-size: 12px; }
+  .mock-dash .row:last-child { border-bottom: none; }
+  .mock-dash b { font-variant-numeric: tabular-nums; }
+
+  /* ───────── 텍스처 / 여백 ───────── */
+
+  .radius-row, .space-row { display: flex; gap: 16px; flex-wrap: wrap; align-items: flex-end; }
+  .radius-item { text-align: center; }
+  .radius-item .box {
+    width: 70px; height: 70px; background: var(--paper); border: 1px solid var(--line);
+    margin-bottom: 8px;
+  }
+  .radius-item span { font-size: 11px; color: var(--soft); }
+
+  /* ───────── colophon ───────── */
+
+  .colophon { padding: 64px 0 90px; }
+  .colophon .box {
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    padding: 28px 30px;
+    background: var(--paper);
+    font-size: 13px;
+    color: var(--soft);
+    line-height: 1.85;
+  }
+  .colophon .box b { color: var(--ink); }
+  .colophon .sources { margin-top: 16px; padding-top: 16px; border-top: 1px solid var(--line); }
+  .colophon .sources code {
+    font-size: 12px; background: var(--sand); padding: 2px 6px; border-radius: 4px;
+  }
+  .colo-foot { text-align: center; margin-top: 40px; font-size: 12px; color: var(--faint); }
+</style>
+</head>
+<body style="margin:0">
+
+<div class="cover">
+  <div class="halo a"></div>
+  <div class="halo b"></div>
+  <div class="halo c"></div>
+  <div class="doc cover-inner">
+    <svg class="mark-lg" viewBox="0 0 40 40" fill="none" stroke="currentColor"
+         stroke-width="1.1" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+      <circle cx="20" cy="9.5" r="4"/>
+      <path d="M20 15.2c-4.6 0-8.2 3.3-9 7.8"/>
+      <path d="M20 15.2c4.6 0 8.2 3.3 9 7.8"/>
+      <path d="M7.5 27c2.6-2.1 6.6-3.2 12.5-3.2S30 24.9 32.5 27"/>
+      <path d="M7.5 27c1.6 2.7 6.3 4.2 12.5 4.2S30.9 29.7 32.5 27"/>
+    </svg>
+    <h1 class="serif">릴라그라운드<br>브랜드북</h1>
+    <p class="role">호흡을 고르고, 천천히. 릴라그라운드가 신청 폼, 접수 메일, 포스터,
+      운영 화면 전반에서 지켜온 색과 글자, 말투를 하나의 기준으로 묶었습니다.</p>
+    <div class="cover-meta">
+      <div><dt>버전</dt><dd>1.0 · 2026</dd></div>
+      <div><dt>범위</dt><dd>컬러 · 타이포그래피 · 마크 · 보이스 · UI 패턴</dd></div>
+      <div><dt>근거</dt><dd>실제 배포 중인 화면 전체</dd></div>
+    </div>
+  </div>
+</div>
+
+<div class="doc toc">
+  <ol>
+    <li><a href="#foundation"><span class="toc-n">01</span><span class="toc-title">브랜드 원칙</span></a><span class="toc-sub">왜 이런 색과 말투인가</span></li>
+    <li><a href="#color"><span class="toc-n">02</span><span class="toc-title">컬러</span></a><span class="toc-sub">흙 · 세이지 · 모래</span></li>
+    <li><a href="#type"><span class="toc-n">03</span><span class="toc-title">타이포그래피</span></a><span class="toc-sub">고운바탕 · 시스템 산세리프</span></li>
+    <li><a href="#mark"><span class="toc-n">04</span><span class="toc-title">마크</span></a><span class="toc-sub">연꽃 자세를 단순화한 표식</span></li>
+    <li><a href="#voice"><span class="toc-n">05</span><span class="toc-title">보이스 & 톤</span></a><span class="toc-sub">문장으로 확인하는 태도</span></li>
+    <li><a href="#ui"><span class="toc-n">06</span><span class="toc-title">UI 패턴</span></a><span class="toc-sub">여백 · 모서리 · 상태 표현</span></li>
+    <li><a href="#apps"><span class="toc-n">07</span><span class="toc-title">적용 사례</span></a><span class="toc-sub">폼 · 메일 · 포스터 · 대시보드</span></li>
+    <li><a href="#colophon"><span class="toc-n">08</span><span class="toc-title">부록</span></a><span class="toc-sub">이 문서의 출처</span></li>
+  </ol>
+</div>
+
+<section id="foundation">
+  <div class="doc">
+    <div class="kicker"><span class="n">01</span>브랜드 원칙</div>
+    <div class="section-head">
+      <h2 class="serif">숨을 고르는 속도로<br>모든 화면을 짓는다</h2>
+      <p class="lede">릴라그라운드는 워케이션, 캠프, 스터디처럼 성격이 저마다 다른 프로그램을 운영하지만
+        신청부터 확정 안내까지 한 사람이 겪는 흐름은 하나의 태도로 통일합니다.
+        서두르지 않고, 상태를 숨기지 않고, 결정은 늘 사람에게 남겨둡니다.</p>
+    </div>
+
+    <div class="principles">
+      <div class="principle">
+        <div class="serif num">壹</div>
+        <h3 class="serif">호흡의 속도</h3>
+        <p>첫 화면부터 "호흡을 고르고, 천천히 적어주세요"라고 말합니다.
+          속도를 재촉하는 문구, 카운트다운, 긴급함을 연출하는 장치를 쓰지 않습니다.</p>
+      </div>
+      <div class="principle">
+        <div class="serif num">貳</div>
+        <h3 class="serif">있는 그대로의 상태</h3>
+        <p>접수됐다고 곧 확정된 건 아니라고 매번 분명히 말합니다.
+          정원이 찼으면 "자리 마감"이라 쓰지 에둘러 말하지 않습니다.</p>
+      </div>
+      <div class="principle">
+        <div class="serif num">參</div>
+        <h3 class="serif">자연에서 가져온 색</h3>
+        <p>흙, 마, 세이지 — 채도를 낮춘 자연광의 색만 씁니다.
+          원색이나 그라디언트로 주의를 끌지 않습니다.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="color">
+  <div class="doc">
+    <div class="kicker"><span class="n">02</span>컬러</div>
+    <div class="section-head">
+      <h2 class="serif">흙, 마, 세이지 —<br>스튜디오의 아침 빛</h2>
+      <p class="lede">모든 화면의 CSS 커스텀 프로퍼티에 실제로 이렇게 이름 붙어 있습니다.
+        채도를 낮춘 세이지가 신뢰와 진행을, 클레이가 강조와 경고 직전의 온기를 맡습니다.</p>
+    </div>
+
+    <div class="swatches">
+      <div class="swatch">
+        <div class="chip" style="background:#f4f1ea"></div>
+        <div class="info">
+          <div class="name serif">모래 · Sand</div>
+          <div class="role">배경 / 바탕</div>
+          <code>#f4f1ea</code>
+        </div>
+      </div>
+      <div class="swatch">
+        <div class="chip" style="background:#fbfaf7;border-bottom:1px solid #e0dbd0"></div>
+        <div class="info">
+          <div class="name serif">종이 · Paper</div>
+          <div class="role">카드 / 표면</div>
+          <code>#fbfaf7</code>
+        </div>
+      </div>
+      <div class="swatch">
+        <div class="chip" style="background:#3a3730"></div>
+        <div class="info">
+          <div class="name serif">먹 · Ink</div>
+          <div class="role">본문 텍스트</div>
+          <code>#3a3730</code>
+        </div>
+      </div>
+      <div class="swatch">
+        <div class="chip" style="background:#7d8f7a"></div>
+        <div class="info">
+          <div class="name serif">세이지 · Sage</div>
+          <div class="role">주 강조 / 진행</div>
+          <code>#7d8f7a</code>
+        </div>
+      </div>
+      <div class="swatch">
+        <div class="chip" style="background:#5f6f5d"></div>
+        <div class="info">
+          <div class="name serif">깊은 세이지 · Sage Deep</div>
+          <div class="role">버튼 / CTA</div>
+          <code>#5f6f5d</code>
+        </div>
+      </div>
+      <div class="swatch">
+        <div class="chip" style="background:#b08268"></div>
+        <div class="info">
+          <div class="name serif">클레이 · Clay</div>
+          <div class="role">필수 표시 / 마감</div>
+          <code>#b08268</code>
+        </div>
+      </div>
+    </div>
+
+    <div class="neutral-strip">
+      <div style="background:#8b8578;color:#fbfaf7">Soft #8b8578</div>
+      <div style="background:#e0dbd0;color:#3a3730">Line #e0dbd0</div>
+      <div style="background:#a4564a;color:#fbfaf7">Alert #a4564a</div>
+    </div>
+    <p class="mini-hint" style="margin-top:14px">보조 텍스트는 Soft, 구분선은 Line, 경고·오류 메시지에만 Alert를 씁니다.
+      다크 모드에서는 세 톤 모두 명도를 뒤집어 같은 채도 관계를 유지합니다 — 어느 화면이든
+      <code style="background:var(--sand);padding:1px 5px;border-radius:4px">prefers-color-scheme</code>만으로 자동 전환됩니다.</p>
+  </div>
+</section>
+
+<section id="type">
+  <div class="doc">
+    <div class="kicker"><span class="n">03</span>타이포그래피</div>
+    <div class="section-head">
+      <h2 class="serif">제목은 고운바탕,<br>본문은 시스템 산세리프</h2>
+      <p class="lede">두 서체만 씁니다. 감정을 싣는 자리 — 제목, 버튼, 날짜, 섹션 표식 —
+        에는 고운바탕이, 읽고 입력하는 자리에는 플랫폼 기본 산세리프가 맡습니다.</p>
+    </div>
+
+    <div class="type-spec">
+      <div class="card">
+        <h4>디스플레이 — Gowun Batang</h4>
+        <div class="glyphs serif">릴라그라운드</div>
+        <div class="stack">Gowun Batang, Apple SD Gothic Neo, serif</div>
+      </div>
+      <div class="card">
+        <h4>본문 — 시스템 산세리프</h4>
+        <div class="glyphs" style="font-size:20px;font-weight:400;line-height:1.6">호흡을 고르고, 천천히 적어주세요.</div>
+        <div class="stack">-apple-system, Apple SD Gothic Neo, Pretendard, system-ui</div>
+      </div>
+    </div>
+
+    <div class="type-row">
+      <div class="sample serif" style="font-size:32px">신청이 접수되었습니다</div>
+      <div class="meta"><b>H1 · Gowun Batang 700</b>23–34px · line-height 1.3–1.45</div>
+    </div>
+    <div class="type-row">
+      <div class="sample serif" style="font-size:20px">수업 선택</div>
+      <div class="meta"><b>레전드 · Gowun Batang 700</b>12px · 자간 .16em · 대문자</div>
+    </div>
+    <div class="type-row">
+      <div class="sample" style="font-size:15px;font-weight:400">이전에 신청한 적 있으면 같은 연락처로 적어주세요.</div>
+      <div class="meta"><b>본문 · 산세리프 400</b>13–15px · line-height 1.7</div>
+    </div>
+    <div class="type-row">
+      <div class="sample num-demo serif">10.12</div>
+      <div class="meta"><b>데이터 숫자 · tabular-nums</b>날짜·정원·참가비에 고정폭 숫자</div>
+    </div>
+  </div>
+</section>
+
+<section id="mark">
+  <div class="doc">
+    <div class="kicker"><span class="n">04</span>마크</div>
+    <div class="section-head">
+      <h2 class="serif">연꽃 자세를<br>선 하나로 단순화한 표식</h2>
+      <p class="lede">머리(원)와 두 팔, 가부좌한 다리 — 총 다섯 개의 선으로 이루어진
+        스트로크 아이콘입니다. 채움 없이 선으로만 그려 어떤 배경 위에서도 무겁지 않습니다.</p>
+    </div>
+
+    <div class="mark-block">
+      <div class="mark-stage">
+        <svg viewBox="0 0 40 40" fill="none" stroke="currentColor" stroke-width="1.15"
+             stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="20" cy="9.5" r="4"/>
+          <path d="M20 15.2c-4.6 0-8.2 3.3-9 7.8"/>
+          <path d="M20 15.2c4.6 0 8.2 3.3 9 7.8"/>
+          <path d="M7.5 27c2.6-2.1 6.6-3.2 12.5-3.2S30 24.9 32.5 27"/>
+          <path d="M7.5 27c1.6 2.7 6.3 4.2 12.5 4.2S30.9 29.7 32.5 27"/>
+        </svg>
+      </div>
+      <div class="mark-rules">
+        <dl>
+          <div class="r"><dt>선 색</dt><dd>Sage 단색 고정. 그러데이션·채움 금지</dd></div>
+          <div class="r"><dt>선 굵기</dt><dd>뷰박스 40 기준 stroke-width 1.15</dd></div>
+          <div class="r"><dt>최소 크기</dt><dd>24×24px 이하로 축소하지 않음</dd></div>
+          <div class="r"><dt>등장 위치</dt><dd>폼 헤더, 메일 상단, 포스터 좌상단에 1회</dd></div>
+        </dl>
+      </div>
+    </div>
+
+    <div class="dont-row">
+      <div class="dont">
+        <div class="stage">
+          <svg width="46" height="46" viewBox="0 0 40 40" fill="currentColor">
+            <circle cx="20" cy="9.5" r="4"/>
+            <path d="M20 15.2c-4.6 0-8.2 3.3-9 7.8h18c-.8-4.5-4.4-7.8-9-7.8z"/>
+          </svg>
+        </div>
+        <p>면으로 채우지 않는다</p>
+      </div>
+      <div class="dont">
+        <div class="stage" style="background:linear-gradient(135deg,#b08268,#7d8f7a);border-radius:8px;width:74px">
+          <svg width="40" height="40" viewBox="0 0 40 40" fill="none" stroke="#fff" stroke-width="1.15" stroke-linecap="round">
+            <circle cx="20" cy="9.5" r="4"/><path d="M20 15.2c-4.6 0-8.2 3.3-9 7.8"/>
+          </svg>
+        </div>
+        <p>다른 색·그라디언트를 넣지 않는다</p>
+      </div>
+      <div class="dont">
+        <div class="stage" style="transform:rotate(180deg)">
+          <svg width="46" height="46" viewBox="0 0 40 40" fill="none" stroke="currentColor" stroke-width="1.15" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="20" cy="9.5" r="4"/>
+            <path d="M20 15.2c-4.6 0-8.2 3.3-9 7.8"/>
+            <path d="M20 15.2c4.6 0 8.2 3.3 9 7.8"/>
+            <path d="M7.5 27c2.6-2.1 6.6-3.2 12.5-3.2S30 24.9 32.5 27"/>
+          </svg>
+        </div>
+        <p>기울이거나 뒤집지 않는다</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="voice">
+  <div class="doc">
+    <div class="kicker"><span class="n">05</span>보이스 & 톤</div>
+    <div class="section-head">
+      <h2 class="serif">낮고 다정하게,<br>그러나 숨기지 않게</h2>
+      <p class="lede">모든 문장은 존댓말이되 격식을 차리지 않습니다. 상태는 정확히 말하고,
+        결정은 사용자 몫으로 남깁니다.</p>
+    </div>
+
+    <div class="voice-principles">
+      <div class="voice-p">
+        <div class="term serif">천천히</div>
+        <div class="desc">"호흡을 고르고, 천천히 적어주세요" — 첫 문장부터 속도를 정합니다.
+          입력을 재촉하는 표현("지금 바로", "서두르세요")을 쓰지 않습니다.</div>
+      </div>
+      <div class="voice-p">
+        <div class="term serif">정직하게</div>
+        <div class="desc">"아직 참가가 확정된 것은 아닙니다"처럼, 사용자가 오해할 수 있는
+          상태는 먼저 나서서 정정합니다. 좋은 소식만 강조하지 않습니다.</div>
+      </div>
+      <div class="voice-p">
+        <div class="term serif">사람으로</div>
+        <div class="desc">시스템 이름 대신 "운영팀"이, 자동화 대신 "곧 보내드리며"가 말합니다.
+          발신자도 회신 가능한 사람의 자리에서 씁니다.</div>
+      </div>
+    </div>
+
+    <div class="quote-wall">
+      <div class="quote">
+        <p class="serif">"호흡을 고르고, 천천히 적어주세요."</p>
+        <div class="src">신청 폼 · 첫 안내 문구</div>
+      </div>
+      <div class="quote">
+        <p class="serif">"신청해주셔서 감사합니다. 수업에서 뵙겠습니다."</p>
+        <div class="src">접수 확인 메일 · 인사말</div>
+      </div>
+      <div class="quote">
+        <p class="serif">"아직 참가가 확정된 것은 아닙니다."</p>
+        <div class="src">접수 확인 메일 · 상태 고지</div>
+      </div>
+      <div class="quote">
+        <p class="serif">"제출하신 정보는 프로그램 운영 목적으로만 사용됩니다."</p>
+        <div class="src">폼 · 메일 공통 · 신뢰 고지</div>
+      </div>
+    </div>
+
+    <div style="margin-top:48px" class="tone-table-wrap">
+      <table class="tone-table">
+        <thead><tr><th style="width:30%">상황</th><th>이렇게 씁니다</th><th>이렇게 쓰지 않습니다</th></tr></thead>
+        <tbody>
+          <tr>
+            <td>정원 마감</td>
+            <td class="do">자리 마감</td>
+            <td class="dont">곧 마감 예정 · 서두르세요</td>
+          </tr>
+          <tr>
+            <td>접수 직후</td>
+            <td class="do">아직 참가가 확정된 것은 아닙니다</td>
+            <td class="dont">신청이 완료되었습니다 (확정으로 오해될 표현)</td>
+          </tr>
+          <tr>
+            <td>필수 입력 안내</td>
+            <td class="do">편하게 적어주세요</td>
+            <td class="dont">반드시 입력해야 합니다</td>
+          </tr>
+          <tr>
+            <td>문의 유도</td>
+            <td class="do">이 메일에 회신해주세요</td>
+            <td class="dont">고객센터로 연락 바랍니다</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<section id="ui">
+  <div class="doc">
+    <div class="kicker"><span class="n">06</span>UI 패턴</div>
+    <div class="section-head">
+      <h2 class="serif">여백이 먼저,<br>상태는 형태로도 말한다</h2>
+      <p class="lede">카드 모서리, 구분선, 상태 표현까지 — 화면마다 반복되는 요소를 규격화했습니다.</p>
+    </div>
+
+    <div class="pattern-grid">
+      <div class="pattern">
+        <h4>카드 · 모서리</h4>
+        <div class="demo">
+          <div style="background:var(--sand);border:1px solid var(--line);border-radius:14px;padding:16px;font-size:12px;color:var(--soft)">
+            radius 14px<br>border 1px Line
+          </div>
+        </div>
+        <p class="note">폼·메일·대시보드 카드 모두 14px, 입력창·버튼은 9px.</p>
+      </div>
+
+      <div class="pattern">
+        <h4>섹션 레전드</h4>
+        <div class="demo"><div class="mini-legend">수업 선택</div></div>
+        <p class="note">12px, 대문자 자간 .16em, Sage 색 — 입력 구역을 구분합니다.</p>
+      </div>
+
+      <div class="pattern">
+        <h4>강조 인용 블록</h4>
+        <div class="demo"><div class="mini-quote">입금 안내를 곧 보내드리며, 입금이 확인되면 확정 안내를 드립니다.</div></div>
+        <p class="note">Sand 배경 + Sage 왼쪽 테두리로 상태 안내를 감쌉니다.</p>
+      </div>
+
+      <div class="pattern">
+        <h4>상태 배지</h4>
+        <div class="demo"><span class="mini-pill">모집중</span></div>
+        <p class="note">모집중은 Sage, 마감 임박은 Clay, 종료는 Soft — 색으로 먼저 읽힙니다.</p>
+      </div>
+
+      <div class="pattern">
+        <h4>정원 게이지</h4>
+        <div class="demo"><div class="mini-bar"><i></i></div></div>
+        <p class="note">둥근 바, 가득 차면 Sage에서 Clay로 색이 바뀌어 마감을 알립니다.</p>
+      </div>
+
+      <div class="pattern">
+        <h4>기본 버튼</h4>
+        <div class="demo"><span class="mini-btn serif">신청하기</span></div>
+        <p class="note">Sage Deep 배경, 고운바탕 굵게, 자간 .06em.</p>
+      </div>
+    </div>
+
+    <div style="margin-top:56px;display:grid;grid-template-columns:1fr 1fr;gap:48px">
+      <div>
+        <h4 style="font-size:13px;font-weight:700;margin-bottom:16px">모서리 반경</h4>
+        <div class="radius-row">
+          <div class="radius-item"><div class="box" style="border-radius:9px"></div><span>9px · 입력/버튼</span></div>
+          <div class="radius-item"><div class="box" style="border-radius:14px"></div><span>14px · 카드</span></div>
+          <div class="radius-item"><div class="box" style="border-radius:50%"></div><span>원형 · 완료 씰</span></div>
+        </div>
+      </div>
+      <div>
+        <h4 style="font-size:13px;font-weight:700;margin-bottom:16px">배경 halo 모티프</h4>
+        <div style="position:relative;height:90px;overflow:hidden;border:1px solid var(--line);border-radius:12px;background:var(--sand)">
+          <div style="position:absolute;width:140px;height:140px;border-radius:50%;border:1px solid var(--line);top:-60px;right:-40px"></div>
+          <div style="position:absolute;width:80px;height:80px;border-radius:50%;border:1px solid var(--line);bottom:-40px;left:-20px"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="apps">
+  <div class="doc">
+    <div class="kicker"><span class="n">07</span>적용 사례</div>
+    <div class="section-head">
+      <h2 class="serif">폼에서 포스터까지,<br>같은 손끝으로</h2>
+      <p class="lede">지금 배포되어 있는 네 화면입니다. 매체가 바뀌어도 색·서체·문장의 규칙은 그대로 적용됩니다.</p>
+    </div>
+
+    <div class="app-gallery">
+      <div class="app-card">
+        <div class="stage">
+          <div class="mock-form-head">
+            <svg viewBox="0 0 40 40" fill="none" stroke="currentColor" stroke-width="1.15" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="20" cy="9.5" r="4"/><path d="M20 15.2c-4.6 0-8.2 3.3-9 7.8"/><path d="M20 15.2c4.6 0 8.2 3.3 9 7.8"/>
+            </svg>
+            <b>프로그램 신청</b>
+          </div>
+          <div class="mock-field"><label>프로그램</label><div class="mini-input">곡성AI워케이션 2기</div></div>
+          <div class="mock-field"><label>이름</label><div class="mini-input">·····</div></div>
+          <span class="mini-btn serif" style="margin-top:8px">신청하기</span>
+        </div>
+        <div class="cap"><b>신청 폼</b><span>public/index.html</span></div>
+      </div>
+
+      <div class="app-card">
+        <div class="stage">
+          <div class="mock-mail">
+            <div class="dots serif">● ● ●</div>
+            <h5>신청이 접수되었습니다</h5>
+            <p>OOO님, 신청해주셔서 감사합니다.</p>
+          </div>
+        </div>
+        <div class="cap"><b>접수 확인 메일</b><span>lib/mail.ts</span></div>
+      </div>
+
+      <div class="app-card">
+        <div class="stage">
+          <div class="mock-poster">
+            <div class="h a"></div>
+            <div class="kick">곡성AI워케이션</div>
+            <h5>곡성AI워케이션<br>2기</h5>
+            <div class="date">10.12</div>
+          </div>
+        </div>
+        <div class="cap"><b>홍보 포스터</b><span>poster/*.html</span></div>
+      </div>
+
+      <div class="app-card">
+        <div class="stage mock-dash">
+          <div class="row"><span>곡성AI워케이션 2기</span><span class="mini-pill">모집중</span></div>
+          <div class="row"><span>신청 인원</span><b>12 / 16명</b></div>
+          <div class="mini-bar" style="margin-top:6px"><i style="width:75%"></i></div>
+        </div>
+        <div class="cap"><b>운영 현황</b><span>public/status.html</span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="colophon">
+  <div class="doc colophon">
+    <div class="kicker"><span class="n">08</span>부록</div>
+    <div class="box">
+      이 브랜드북은 <b>chatgpt.com의 릴라그라운드 대화 내역이나 Gemini는 이 세션에서 접근할 수 없어</b>
+      대신 <b>릴라그라운드가 실제로 배포 중인 화면 전체</b>(신청 폼, 접수 메일, 홍보 포스터, 운영 현황·후기
+      대시보드)의 CSS 토큰과 문구를 그대로 발췌·정리해 만들었습니다. 즉 "제안"이 아니라
+      이미 통일되어 있던 기준을 하나의 문서로 옮긴 것입니다.
+      <div class="sources">
+        출처 — <code>public/index.html</code> · <code>public/my.html</code> · <code>public/status.html</code> ·
+        <code>public/reviews.html</code> · <code>lib/mail.ts</code> · <code>poster/*.html</code>
+        (저장소 <code>psdeokhyun-jpg/nodak-apply-form</code>)
+      </div>
+    </div>
+    <p class="colo-foot">릴라그라운드 브랜드북 · v1.0</p>
+  </div>
+</section>
+</body>
+</html>
